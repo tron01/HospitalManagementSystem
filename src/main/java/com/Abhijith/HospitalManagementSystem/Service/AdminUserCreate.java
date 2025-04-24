@@ -1,6 +1,6 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
-import com.Abhijith.HospitalManagementSystem.Model.User;
+import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,7 @@ public class AdminUserCreate {
     public CommandLineRunner UserAdminCreate(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-                User user = new User();
+                Users user = new Users();
                 user.setUsername("admin");
                 user.setPassword(passwordEncoder.encode("admin"));
                 user.setRole("ROLE_ADMIN");

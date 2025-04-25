@@ -9,7 +9,9 @@ import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class DoctorService {
@@ -37,7 +39,7 @@ public class DoctorService {
         Users user = new Users();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole("DOCTOR"); // Set role for doctor
+        user.setRole("ROLE_DOCTOR"); // Set role for doctor
         userRepository.save(user);
 
         // Create Doctor entity
@@ -54,5 +56,13 @@ public class DoctorService {
                 savedDoctor.getName(),
                 savedDoctor.getSpecialization()
         );
+    }
+
+    public List<DoctorResponse> getAllDoctors() {
+        return  doctorRepository.findAll().stream().map(d->new DoctorResponse(d.getId(),
+                d.getUser().getUsername(),
+                d.getName(),
+                d.getSpecialization()))
+                .toList();
     }
 }

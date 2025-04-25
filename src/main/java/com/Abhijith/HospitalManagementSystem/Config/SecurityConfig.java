@@ -33,8 +33,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.requestMatchers("/authenticate").permitAll()
-                .anyRequest().authenticated())
+                .authorizeHttpRequests(
+                        req -> req.requestMatchers("/api/auth/login").permitAll()
+                                .requestMatchers("/api/doctor/register").permitAll()
+                                .requestMatchers("/api/patient/register").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/patient/**").hasRole("PATIENT")
+                                .requestMatchers("/api/doctor/**").hasRole("DOCTOR")
+                                .anyRequest().authenticated())
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

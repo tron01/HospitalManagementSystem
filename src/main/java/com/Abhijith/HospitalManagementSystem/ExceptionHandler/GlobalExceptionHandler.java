@@ -1,32 +1,69 @@
 package com.Abhijith.HospitalManagementSystem.ExceptionHandler;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import com.Abhijith.HospitalManagementSystem.DTO.ErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.View;
+
+import java.time.LocalDateTime;
+
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("error", "Invalid username or password");
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "Invalid username or password",
+                ex.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleAll(Exception ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("error", "Something went wrong");
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex,  HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Required request body is missing or invalid",
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex,  HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not found",
+                ex.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllException(Exception ex, HttpServletRequest request) {
+        // log it!
+        log.error("Unhandled exception", ex);
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal server error",
+                ex.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+
 
 }

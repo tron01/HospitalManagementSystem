@@ -36,4 +36,9 @@ public class PatientController {
         return "patient api reachable";
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PatientResponse> getPatientById(@PathVariable("id") long id) {
+        return ResponseEntity.ok(patientService.getPatientById(id));
+    }
+
 }

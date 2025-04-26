@@ -7,8 +7,12 @@ import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +62,22 @@ public class DoctorService {
         );
     }
 
+    //getList
     public List<DoctorResponse> getAllDoctors() {
         return  doctorRepository.findAll().stream().map(d->new DoctorResponse(d.getId(),
                 d.getUser().getUsername(),
                 d.getName(),
                 d.getSpecialization()))
                 .toList();
+    }
+
+    //getByID
+    public DoctorResponse getDoctorById(long id) {
+        Doctor doctor = doctorRepository.findById(id).
+                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor with Id "+id+" not found"));
+        return new DoctorResponse(doctor.getId(),
+                doctor.getUser().getUsername(),
+                doctor.getName(),
+                doctor.getSpecialization());
     }
 }

@@ -7,8 +7,11 @@ import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +61,7 @@ public class PatientService {
         );
     }
 
+    //getByID
     public List<PatientResponse> getAllPatients() {
         return patientRepo.findAll().stream().map(p -> new PatientResponse(
                         p.getId(),
@@ -65,5 +69,15 @@ public class PatientService {
                         p.getName(),
                         p.getAddress()))
                         .toList();
+    }
+
+    //getByID
+    public PatientResponse getPatientById(long id) {
+        Patient patient= patientRepo.findById(id)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Patient with Id "+id+" not found"));
+        return new PatientResponse(patient.getId(),
+                patient.getUser().getUsername(),
+                patient.getName(),
+                patient.getAddress());
     }
 }

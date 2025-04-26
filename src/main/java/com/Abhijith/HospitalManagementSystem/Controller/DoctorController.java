@@ -34,5 +34,10 @@ public class DoctorController {
     public String test() {
         return "doctor api reachable";
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DoctorResponse> getDoctorById(@PathVariable("id") long id) {
+        return ResponseEntity.ok(doctorService.getDoctorById(id));
+    }
 }
 

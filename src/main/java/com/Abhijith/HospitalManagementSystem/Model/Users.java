@@ -26,6 +26,8 @@ public class Users implements UserDetails {
     private String username;
     private String password;
     private String role;
+    private boolean isEnabled=false;  // Field to track if the user is enabled . initally not enabled
+    private boolean isAccountNonLocked=true;  // Field to track account lock status
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -34,21 +36,13 @@ public class Users implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
+        return true;    }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
+        return isAccountNonLocked;    }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+        return isEnabled;    }
 }

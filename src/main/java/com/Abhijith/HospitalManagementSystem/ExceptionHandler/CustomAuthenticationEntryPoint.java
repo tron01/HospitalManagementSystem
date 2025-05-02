@@ -1,12 +1,16 @@
 package com.Abhijith.HospitalManagementSystem.ExceptionHandler;
 
+import com.Abhijith.HospitalManagementSystem.DTO.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -18,7 +22,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
-			response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Invalid or missing token\"}");
+			ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),
+					HttpStatus.UNAUTHORIZED.value(),
+					"Unauthorized",
+					"Invalid or missing toke",
+					request.getRequestURI());
 
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(response.getWriter(), errorResponse);
 		}
 }

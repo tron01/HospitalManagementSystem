@@ -41,9 +41,12 @@ public class SecurityConfig {
                                     .accessDeniedHandler(accessDeniedHandler))
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(
-                        req -> req.requestMatchers("/api/auth/login").permitAll()
+                        req -> req.requestMatchers("/api/auth/login",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html").permitAll()
                                 .requestMatchers("/api/doctor/register").permitAll()
-                                .requestMatchers("/api/patient/register").permitAll()
+                                .requestMatchers("/api/patient/register","swagger-ui/index.html").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/patient/**").hasRole("PATIENT")
                                 .requestMatchers("/api/doctor/**").hasRole("DOCTOR")

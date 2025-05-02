@@ -1,0 +1,34 @@
+package com.Abhijith.HospitalManagementSystem.Controller;
+
+import com.Abhijith.HospitalManagementSystem.Service.AdminService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
+public class AdminController {
+
+	private final AdminService adminService;
+
+	@PatchMapping("/enable/{id}")
+	public ResponseEntity<UserResponse> enableUser(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.enableUser(id));
+	}
+
+	@PatchMapping("/disable/{id}")
+	public ResponseEntity<UserResponse> disableUser(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.disableUser(id));
+	}
+
+	@PatchMapping("/lock/{id}")
+	public ResponseEntity<UserResponse> lockUser(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.lockUser(id));
+	}
+
+	@PatchMapping("/unlock/{id}")
+	public ResponseEntity<UserResponse> unlockUser(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.unlockUser(id));
+	}
+}

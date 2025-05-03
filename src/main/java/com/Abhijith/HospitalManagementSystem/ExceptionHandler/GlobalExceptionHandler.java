@@ -12,8 +12,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.View;
-
 import java.time.LocalDateTime;
 
 
@@ -46,11 +44,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex,  HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
-                HttpStatus.NOT_FOUND.value(),
-                "Not found",
-                ex.getMessage(),
+                ex.getStatusCode().value(),
+                "",
+                ex.getReason(),
                 request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(ex.getStatusCode().value()).body(error);
     }
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<ErrorResponse> handleDisabledException(DisabledException ex, HttpServletRequest request) {

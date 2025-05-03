@@ -1,7 +1,5 @@
 package com.Abhijith.HospitalManagementSystem.Service;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorAdminResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.PatientAdminResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.UserResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Patient;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
@@ -9,10 +7,14 @@ import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +76,57 @@ private final DoctorRepository doctorRepository;
 				.map(this::toDoctorAdminResponse)
 				.collect(Collectors.toList());
 	}
+
+	public DoctorAdminResponse updateDoctor(Long id, DoctorUpdateRequest request) {
+		Doctor doctor = doctorRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
+
+		Users user = doctor.getUser();
+
+		// Check if the username is already taken by someone else
+		if (request.getUsername() != null) {
+			Optional<Users> existingUser = userRepository.findByUsername(request.getUsername());
+			if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists for another doctor. Please choose a different username.");
+			}
+			user.setUsername(request.getUsername());
+		}
+
+		// Update doctor info conditionally
+		if (request.getName() != null) doctor.setName(request.getName());
+		if (request.getSpecialization() != null) doctor.setSpecialization(request.getSpecialization());
+		if (request.getContact() != null) doctor.setContact(request.getContact());
+		if (request.getEmail() != null) doctor.setEmail(request.getEmail());
+
+		return toDoctorAdminResponse(doctorRepository.save(doctor));
+	}
+
+
+	public PatientAdminResponse updatePatient(Long id, PatientUpdateRequest request) {
+		Patient patient = patientRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+
+		Users user = patient.getUser();
+
+		// Check if username is being updated and ensure it's unique
+		if (request.getUsername() != null) {
+			Optional<Users> existingUser = userRepository.findByUsername(request.getUsername());
+			if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists for another patient. Please choose a different username.");
+			}
+			user.setUsername(request.getUsername());
+		}
+
+		// Update patient info conditionally
+		if (request.getName() != null) patient.setName(request.getName());
+		if (request.getAge() != null) patient.setAge(request.getAge());
+		if (request.getGender() != null) patient.setGender(request.getGender());
+		if (request.getContact() != null) patient.setContact(request.getContact());
+		if (request.getAddress() != null) patient.setAddress(request.getAddress());
+
+		return toPatientAdminResponse(patientRepository.save(patient));
+	}
+
 
 	private UserResponse toDto(Users user) {
 			return UserResponse.builder()

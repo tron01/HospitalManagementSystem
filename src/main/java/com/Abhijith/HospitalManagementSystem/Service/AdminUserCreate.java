@@ -18,6 +18,8 @@ public class AdminUserCreate {
                 user.setUsername("admin");
                 user.setPassword(passwordEncoder.encode("admin"));
                 user.setRole("ROLE_ADMIN");
+                user.setEnabled(true);
+                user.setAccountNonLocked(true);
                 userRepository.save(user);
                 System.out.println("✅ Admin user created");
             } else {

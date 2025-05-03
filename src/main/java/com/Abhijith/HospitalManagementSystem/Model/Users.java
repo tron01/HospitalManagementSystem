@@ -35,10 +35,6 @@ public class Users implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;    }
-
-    @Override
     public boolean isAccountNonLocked() {
         return isAccountNonLocked;    }
 

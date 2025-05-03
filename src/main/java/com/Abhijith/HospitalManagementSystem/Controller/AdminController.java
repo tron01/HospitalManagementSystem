@@ -5,12 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
 	private final AdminService adminService;
+
+	@GetMapping("/users")
+	public ResponseEntity<List<UserResponse>> getUsers(@RequestParam(required = false) String role) {
+		if (role != null && !role.isBlank()) {
+			return ResponseEntity.ok(adminService.getUsersByRole(role));
+		} else {
+			return ResponseEntity.ok(adminService.getAllUsers());
+		}
+	}
 
 	@PatchMapping("/enable/{id}")
 	public ResponseEntity<UserResponse> enableUser(@PathVariable Long id) {

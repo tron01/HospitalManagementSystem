@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -40,8 +43,19 @@ private final UserRepository userRepository;
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 	}
-	
-	private UserResponse toDto(Users user) {
+	public List<UserResponse> getAllUsers() {
+		return userRepository.findAll().stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
+	}
+
+	public List<UserResponse> getUsersByRole(String role) {
+		return userRepository.findByRoleIgnoreCase(role).stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
+	}
+
+private UserResponse toDto(Users user) {
 		return UserResponse.builder()
 				.id(user.getId())
 				.username(user.getUsername())

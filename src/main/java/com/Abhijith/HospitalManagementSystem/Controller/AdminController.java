@@ -1,6 +1,7 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.Service.AdminService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ public class AdminController {
 
 	private final AdminService adminService;
 
+	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/users")
 	public ResponseEntity<List<UserResponse>> getUsers(@RequestParam(required = false) String role) {
 		if (role != null && !role.isBlank()) {

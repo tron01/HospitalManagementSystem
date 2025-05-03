@@ -48,8 +48,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/doctor/register").permitAll()
                                 .requestMatchers("/api/patient/register","swagger-ui/index.html").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/patient/**").hasRole("PATIENT")
-                                .requestMatchers("/api/doctor/**").hasRole("DOCTOR")
+                                .requestMatchers("/api/patient/**").hasAnyRole("PATIENT","ADMIN")
+                                .requestMatchers("/api/doctor/**").hasAnyRole("DOCTOR","ADMIN")
                                 .anyRequest().authenticated())
                                 .sessionManagement(s->
                                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -26,7 +26,7 @@ public class Users implements UserDetails {
     private String username;
     private String password;
     private String role;
-    private boolean isEnabled=false;  // Field to track if the user is enabled . initally not enabled
+    private boolean isEnabled=true;  // Field to track if the user is enabled
     private boolean isAccountNonLocked=true;  // Field to track account lock status
 
     @Override

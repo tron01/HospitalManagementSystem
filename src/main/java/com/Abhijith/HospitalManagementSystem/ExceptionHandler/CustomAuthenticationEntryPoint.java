@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 			ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),
 					HttpStatus.UNAUTHORIZED.value(),
 					"Unauthorized",
-					"Invalid or missing toke",
+					"Invalid or missing token",
 					request.getRequestURI());
 
 			ObjectMapper mapper = new ObjectMapper();

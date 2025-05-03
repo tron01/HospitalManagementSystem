@@ -6,6 +6,7 @@ import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,18 +18,14 @@ import java.util.Optional;
 
 
 @Service
+@AllArgsConstructor
 public class DoctorService {
 
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public DoctorService(UserRepository userRepository, DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.doctorRepository = doctorRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+
 
     // Register Doctor
     public DoctorResponse registerDoctor(DoctorRegister dto) {

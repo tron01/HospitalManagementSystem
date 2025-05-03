@@ -1,4 +1,4 @@
-package com.Abhijith.HospitalManagementSystem.Controller;
+package com.Abhijith.HospitalManagementSystem.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

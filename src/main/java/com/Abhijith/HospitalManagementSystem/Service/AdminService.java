@@ -1,5 +1,5 @@
 package com.Abhijith.HospitalManagementSystem.Service;
-import com.Abhijith.HospitalManagementSystem.Controller.UserResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.UserResponse;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;

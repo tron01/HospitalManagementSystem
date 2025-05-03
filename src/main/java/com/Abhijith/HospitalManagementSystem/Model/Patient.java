@@ -19,7 +19,7 @@ public class Patient {
     private String gender;
     private String contact;
     private String address;
-    private int age;
+    private Integer  age;
 
     @OneToOne
     @JoinColumn(name = "user_id")

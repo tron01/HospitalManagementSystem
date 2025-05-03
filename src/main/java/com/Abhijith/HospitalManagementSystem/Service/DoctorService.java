@@ -1,13 +1,15 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
+import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
+import com.Abhijith.HospitalManagementSystem.Model.Appointment;
 import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -24,8 +27,7 @@ public class DoctorService {
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
-
-
+    private final AppointmentRepository appointmentRepository;
 
     // Register Doctor
     public DoctorResponse registerDoctor(DoctorRegister dto) {
@@ -63,28 +65,26 @@ public class DoctorService {
                 savedDoctor.getContact()
         );
     }
+    public List<AppointmentResponse> getAppointmentsListByDoctorId(Long userId) {
 
-    //getList
-    public List<DoctorResponse> getAllDoctors() {
-        return  doctorRepository.findAll().stream().map(d->new DoctorResponse(d.getId(),
-                        d.getUser().getUsername(),
-                        d.getName(),
-                        d.getSpecialization(),
-                        d.getEmail(),
-                        d.getContact()))
-                .toList();
+        Doctor doctor = doctorRepository.findByUserId(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "doctor not found"));
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(doctor.getId());
+
+        return appointments.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    //getByID
-    public DoctorResponse getDoctorById(long id) {
-        Doctor doctor = doctorRepository.findById(id).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor with Id "+id+" not found"));
-        return new DoctorResponse(
-                doctor.getId(),
-                doctor.getUser().getUsername(),
-                doctor.getName(),
-                doctor.getSpecialization(),
-                doctor.getEmail(),
-                doctor.getContact());
+    private AppointmentResponse toResponse(Appointment appointment) {
+        return new AppointmentResponse(
+                appointment.getId(),
+                appointment.getPatient().getName(),
+                appointment.getDoctor().getName(),
+                appointment.getAppointmentTime(),
+                appointment.getReason(),
+                appointment.getStatus()
+        );
     }
+
 }

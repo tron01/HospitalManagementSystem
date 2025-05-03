@@ -1,31 +1,27 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
+import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.UserTestResponse;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/doctor")
+@AllArgsConstructor
 public class DoctorController {
 
     private final DoctorService doctorService;
-
-    @Autowired
-    public DoctorController(DoctorService doctorService) {
-        this.doctorService = doctorService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<DoctorResponse> registerDoctor(@RequestBody DoctorRegister doctorDTO) {
@@ -34,17 +30,6 @@ public class DoctorController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/list")
-    public ResponseEntity<List<DoctorResponse>> getDoctors() {
-        return ResponseEntity.ok(doctorService.getAllDoctors());
-    }
-
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/{id}")
-    public ResponseEntity<DoctorResponse> getDoctorById(@PathVariable("id") long id) {
-        return ResponseEntity.ok(doctorService.getDoctorById(id));
-    }
-
     @GetMapping("/test")
     public ResponseEntity<UserTestResponse> test() {
         Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -60,5 +45,18 @@ public class DoctorController {
                 currentUser.getUsername(),
                 currentUser.getRole()));
     }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/appointments")
+    public ResponseEntity<List<AppointmentResponse>> getAppointmentsForLoggedInDoctor() {
+        Users currentUser = (Users) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        Long doctorId = currentUser.getId();
+        System.out.println(doctorId);
+        List<AppointmentResponse> appointments = doctorService.getAppointmentsListByDoctorId(doctorId);
+        System.out.println(appointments);
+        return ResponseEntity.ok(appointments);
+    }
+
 }
 

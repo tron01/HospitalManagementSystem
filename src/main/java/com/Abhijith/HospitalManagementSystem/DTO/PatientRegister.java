@@ -12,4 +12,8 @@ public class PatientRegister {
     private String username;
     private String password;
     private String name;
-    private String address;}
+    private String address;
+    private int age;
+    private String gender;
+    private String contact;
+}

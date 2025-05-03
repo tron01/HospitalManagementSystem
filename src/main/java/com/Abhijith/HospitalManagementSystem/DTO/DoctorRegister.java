@@ -12,4 +12,6 @@ public class DoctorRegister {
     private String password;
     private String name;
     private String specialization;
+    private String contact;
+    private String email;
 }

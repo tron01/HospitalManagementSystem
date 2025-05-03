@@ -12,4 +12,6 @@ public class DoctorResponse {
     private String username;
     private String name;
     private String specialization;
+	private String contact;
+	private String email;
 }

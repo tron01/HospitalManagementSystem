@@ -50,6 +50,9 @@ public class PatientService {
         patient.setName(dto.getName());
         patient.setUser(user);
         patient.setAddress(dto.getAddress());
+        patient.setAge(dto.getAge());
+        patient.setGender(dto.getGender());
+        patient.setContact(dto.getContact());
         Patient savedPatient = patientRepo.save(patient);
 
         // Save patient and return response DTO
@@ -57,7 +60,10 @@ public class PatientService {
                 savedPatient.getId(),
                 savedPatient.getUser().getUsername(),
                 savedPatient.getName(),
-                savedPatient.getAddress()
+                savedPatient.getAddress(),
+                savedPatient.getAge(),
+                savedPatient.getGender(),
+                savedPatient.getContact()
         );
     }
 
@@ -67,7 +73,10 @@ public class PatientService {
                         p.getId(),
                         p.getUser().getUsername(),
                         p.getName(),
-                        p.getAddress()))
+                        p.getAddress(),
+                        p.getAge(),
+                        p.getGender(),
+                        p.getContact()))
                         .toList();
     }
 
@@ -78,6 +87,9 @@ public class PatientService {
         return new PatientResponse(patient.getId(),
                 patient.getUser().getUsername(),
                 patient.getName(),
-                patient.getAddress());
+                patient.getAddress(),
+                patient.getAge(),
+                patient.getGender(),
+                patient.getContact());
     }
 }

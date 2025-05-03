@@ -2,8 +2,11 @@ package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Service.AdminService;
+import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
+import com.Abhijith.HospitalManagementSystem.Service.PatientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,6 +17,30 @@ import java.util.List;
 public class AdminController {
 
 	private final AdminService adminService;
+	private final DoctorService doctorService;
+	private final PatientService patientService;
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/dashboard")
+	public String adminDashboard() {
+		return "Welcome to the admin dashboard!";
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/doctors/create-doctor")
+	public ResponseEntity<DoctorResponse> createDoctor(@RequestBody DoctorRegister request) {
+		// Logic to create doctor
+		DoctorResponse savedDoctor = doctorService.registerDoctor(request);
+		return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/patients/create-patient")
+	public ResponseEntity<PatientResponse> createPatient(@RequestBody PatientRegister request) {
+		// Logic to create Patient
+		PatientResponse savedPatient = patientService.registerPatient(request);
+		return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
+	}
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/users")

@@ -21,12 +21,6 @@ public class AdminController {
 	private final PatientService patientService;
 
 	@SecurityRequirement(name = "bearerAuth")
-	@GetMapping("/dashboard")
-	public String adminDashboard() {
-		return "Welcome to the admin dashboard!";
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/doctors/create-doctor")
 	public ResponseEntity<DoctorResponse> createDoctor(@RequestBody DoctorRegister request) {
 		// Logic to create doctor
@@ -53,6 +47,40 @@ public class AdminController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/dashboard")
+	public String adminDashboard() {
+		return "Welcome to the admin dashboard!";
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/patients")
+	public ResponseEntity<List<PatientAdminResponse>> getAllPatients() {
+		return ResponseEntity.ok(adminService.getAllPatients());
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/doctors")
+	public ResponseEntity<List<DoctorAdminResponse>> getAllDoctors() {
+		return ResponseEntity.ok(adminService.getAllDoctors());
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/doctors/{id}")
+	public ResponseEntity<DoctorAdminResponse> updateDoctor(
+			@PathVariable Long id,
+			@RequestBody DoctorUpdateRequest request) {
+		return ResponseEntity.ok(adminService.updateDoctor(id, request));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/patients/{id}")
+	public ResponseEntity<PatientAdminResponse> updatePatient(
+			@PathVariable Long id,
+			@RequestBody PatientUpdateRequest request) {
+		return ResponseEntity.ok(adminService.updatePatient(id, request));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
 	@PatchMapping("/users/{id}/enable")
 	public ResponseEntity<UserResponse> enableUser(@PathVariable Long id) {
 		return ResponseEntity.ok(adminService.enableUser(id));
@@ -74,32 +102,5 @@ public class AdminController {
 	@PatchMapping("/users/{id}/unlock")
 	public ResponseEntity<UserResponse> unlockUser(@PathVariable Long id) {
 		return ResponseEntity.ok(adminService.unlockUser(id));
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
-	@GetMapping("/patients")
-	public ResponseEntity<List<PatientAdminResponse>> getAllPatients() {
-		return ResponseEntity.ok(adminService.getAllPatients());
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
-	@GetMapping("/doctors")
-	public ResponseEntity<List<DoctorAdminResponse>> getAllDoctors() {
-		return ResponseEntity.ok(adminService.getAllDoctors());
-	}
-	@SecurityRequirement(name = "bearerAuth")
-	@PutMapping("/doctors/{id}")
-	public ResponseEntity<DoctorAdminResponse> updateDoctor(
-			@PathVariable Long id,
-			@RequestBody DoctorUpdateRequest request) {
-		return ResponseEntity.ok(adminService.updateDoctor(id, request));
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
-	@PutMapping("/patients/{id}")
-	public ResponseEntity<PatientAdminResponse> updatePatient(
-			@PathVariable Long id,
-			@RequestBody PatientUpdateRequest request) {
-		return ResponseEntity.ok(adminService.updatePatient(id, request));
 	}
 }

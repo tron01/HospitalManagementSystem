@@ -1,11 +1,18 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
+import com.Abhijith.HospitalManagementSystem.DTO.AppointmentCreateRequestByPatient;
+import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.PatientRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.PatientResponse;
+import com.Abhijith.HospitalManagementSystem.Model.Appointment;
+import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Patient;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,21 +21,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
+@AllArgsConstructor
 public class PatientService {
 
     private final UserRepository userRepository;
     private final PatientRepository patientRepo;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public PatientService(UserRepository userRepository, PatientRepository patientRepo, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.patientRepo = patientRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final AppointmentRepository appointmentRepository;
+    private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
 
     // Register Patient
     public PatientResponse registerPatient(PatientRegister dto) {
@@ -67,29 +72,54 @@ public class PatientService {
         );
     }
 
-    //getByID
-    public List<PatientResponse> getAllPatients() {
-        return patientRepo.findAll().stream().map(p -> new PatientResponse(
-                        p.getId(),
-                        p.getUser().getUsername(),
-                        p.getName(),
-                        p.getAddress(),
-                        p.getAge(),
-                        p.getGender(),
-                        p.getContact()))
-                        .toList();
+    public AppointmentResponse createAppointmentByPatient(Long patientId, AppointmentCreateRequestByPatient request) {
+
+        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+
+        Appointment appointment = new Appointment();
+        appointment.setPatient(patient);
+        appointment.setDoctor(doctor);
+        appointment.setAppointmentTime(request.getAppointmentDate());
+        appointment.setReason(request.getReason());
+        appointment.setStatus("PENDING");
+
+        appointmentRepository.save(appointment);
+        return toResponse(appointment);
     }
 
-    //getByID
-    public PatientResponse getPatientById(long id) {
-        Patient patient= patientRepo.findById(id)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Patient with Id "+id+" not found"));
-        return new PatientResponse(patient.getId(),
-                patient.getUser().getUsername(),
-                patient.getName(),
-                patient.getAddress(),
-                patient.getAge(),
-                patient.getGender(),
-                patient.getContact());
+    public AppointmentResponse getAppointmentByPatient(Long id, Long patientId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
+
+        if (!appointment.getPatient().getId().equals(patient.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to this appointment");
+        }
+
+        return toResponse(appointment);
     }
+
+    public List<AppointmentResponse> getAppointmentsListByPatientId(Long patientId) {
+        List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
+        return appointments.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    private AppointmentResponse toResponse(Appointment appointment) {
+        AppointmentResponse response = new AppointmentResponse();
+        response.setId(appointment.getId());
+        response.setDateTime(appointment.getAppointmentTime());
+        response.setReason(appointment.getReason());
+        response.setPatientName(appointment.getPatient().getName());
+        response.setDoctorName(appointment.getDoctor().getName());
+        return response;
+    }
+
+
 }

@@ -1,10 +1,7 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.PatientRegister;
-import com.Abhijith.HospitalManagementSystem.DTO.PatientResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
-import com.Abhijith.HospitalManagementSystem.Service.AppointmentService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
@@ -22,7 +19,6 @@ import java.util.List;
 public class PatientController {
 
     private final PatientService patientService;
-    private final AppointmentService appointmentService;
 
     @PostMapping("/register")
     public ResponseEntity<PatientResponse> registerDoctor(@RequestBody PatientRegister doctorDTO) {
@@ -30,25 +26,49 @@ public class PatientController {
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponse>> getAppointmentsForLoggedInPatient() {
         Users currentUser = (Users) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
         Long patientId = currentUser.getId();
-        List<AppointmentResponse> appointments = appointmentService.getAppointmentsByPatientId(patientId);
+        List<AppointmentResponse> appointments = patientService.getAppointmentsListByPatientId(patientId);
         return ResponseEntity.ok(appointments);
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/test")
-    public String test() {
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<AppointmentResponse> getAppointmentDetails(@PathVariable Long appointmentId) {
         Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long userId = currentUser.getId();
-        String role = currentUser.getRole();
-        log.info("User with id:{} and Role : {} is trying to access patient test", userId,role);
-        return "patient api reachable";
+        AppointmentResponse dto = patientService.getAppointmentByPatient(currentUser.getId(), appointmentId);
+        return ResponseEntity.ok(dto);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/appointments")
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
+        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/test")
+    public ResponseEntity<UserTestResponse> test() {
+
+        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        log.info("-----------------------------------");
+        log.warn("Current user: {}", currentUser.getUsername());
+        log.warn("Current user role: {}", currentUser.getRole());
+        log.warn("Current user id: {}", currentUser.getId());
+        log.info("-----------------------------------");
+
+        return ResponseEntity.ok(new UserTestResponse(
+                currentUser.getId(),
+                currentUser.getUsername(),
+                currentUser.getRole())) ;
+    }
 
 }

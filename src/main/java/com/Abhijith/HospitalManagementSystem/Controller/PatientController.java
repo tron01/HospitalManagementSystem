@@ -27,12 +27,21 @@ public class PatientController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/appointments")
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
+        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponse>> getAppointmentsForLoggedInPatient() {
         Users currentUser = (Users) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
         Long patientId = currentUser.getId();
+        System.out.println(patientId);
         List<AppointmentResponse> appointments = patientService.getAppointmentsListByPatientId(patientId);
         return ResponseEntity.ok(appointments);
     }
@@ -43,14 +52,6 @@ public class PatientController {
         Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AppointmentResponse dto = patientService.getAppointmentByPatient(currentUser.getId(), appointmentId);
         return ResponseEntity.ok(dto);
-    }
-
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/appointments")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
-        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @SecurityRequirement(name = "bearerAuth")

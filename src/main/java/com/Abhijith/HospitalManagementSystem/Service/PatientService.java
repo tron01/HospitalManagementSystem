@@ -76,7 +76,7 @@ public class PatientService {
 
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
-        Patient patient = patientRepository.findById(patientId)
+        Patient patient = patientRepository.findByUserId(patientId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
 
         Appointment appointment = new Appointment();
@@ -104,21 +104,24 @@ public class PatientService {
         return toResponse(appointment);
     }
 
-    public List<AppointmentResponse> getAppointmentsListByPatientId(Long patientId) {
-        List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
+    public List<AppointmentResponse> getAppointmentsListByPatientId(Long userId) {
+        Patient patient = patientRepository.findByUserId(userId).orElseThrow(()->new
+                ResponseStatusException(HttpStatus.NOT_FOUND,"Patient not found"));
+        List<Appointment> appointments = appointmentRepository.findByPatientId(patient.getId());
         return appointments.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     private AppointmentResponse toResponse(Appointment appointment) {
-        AppointmentResponse response = new AppointmentResponse();
-        response.setId(appointment.getId());
-        response.setDateTime(appointment.getAppointmentTime());
-        response.setReason(appointment.getReason());
-        response.setPatientName(appointment.getPatient().getName());
-        response.setDoctorName(appointment.getDoctor().getName());
-        return response;
+        return new AppointmentResponse(
+                appointment.getId(),
+                appointment.getPatient().getName(),
+                appointment.getDoctor().getName(),
+                appointment.getAppointmentTime(),
+                appointment.getReason(),
+                appointment.getStatus()
+        );
     }
 
 

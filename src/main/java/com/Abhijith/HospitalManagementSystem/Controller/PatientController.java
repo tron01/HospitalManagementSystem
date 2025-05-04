@@ -29,7 +29,7 @@ public class PatientController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/appointments")
     public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
-        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users currentUser = getLoggedUserInfo();
         AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -37,8 +37,7 @@ public class PatientController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponse>> getAppointmentsForLoggedInPatient() {
-        Users currentUser = (Users) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
+        Users currentUser = getLoggedUserInfo();
 
         Long patientId = currentUser.getId();
         System.out.println(patientId);
@@ -49,7 +48,7 @@ public class PatientController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{appointmentId}")
     public ResponseEntity<AppointmentResponse> getAppointmentDetails(@PathVariable Long appointmentId) {
-        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users currentUser = getLoggedUserInfo();
         AppointmentResponse dto = patientService.getAppointmentByPatient(currentUser.getId(), appointmentId);
         return ResponseEntity.ok(dto);
     }
@@ -58,7 +57,7 @@ public class PatientController {
     @GetMapping("/test")
     public ResponseEntity<UserTestResponse> test() {
 
-        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users currentUser = getLoggedUserInfo();
 
         log.info("-----------------------------------");
         log.warn("Current user: {}", currentUser.getUsername());
@@ -70,6 +69,10 @@ public class PatientController {
                 currentUser.getId(),
                 currentUser.getUsername(),
                 currentUser.getRole())) ;
+    }
+
+    private static Users getLoggedUserInfo() {
+		return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }

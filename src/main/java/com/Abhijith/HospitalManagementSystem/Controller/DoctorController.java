@@ -32,7 +32,8 @@ public class DoctorController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/test")
     public ResponseEntity<UserTestResponse> test() {
-        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Users currentUser = getLoggedUserInfo();
 
         log.info("-----------------------------------");
         log.warn("Current user: {}", currentUser.getUsername());
@@ -57,6 +58,11 @@ public class DoctorController {
         System.out.println(appointments);
         return ResponseEntity.ok(appointments);
     }
+
+    private static Users getLoggedUserInfo() {
+        return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
 
 }
 

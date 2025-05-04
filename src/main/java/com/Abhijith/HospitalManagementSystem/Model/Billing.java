@@ -1,9 +1,14 @@
 package com.Abhijith.HospitalManagementSystem.Model;
 
 import jakarta.persistence.*;
-
+import lombok.*;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class Billing {
 
@@ -17,5 +22,6 @@ public class Billing {
     @OneToOne
     private Appointment appointment;
 
-    private String paymentStatus; // PAID, UNPAID
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;// PAID, UNPAID
 }

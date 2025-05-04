@@ -1,5 +1,6 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
+import com.Abhijith.HospitalManagementSystem.Model.Role;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +18,7 @@ public class AdminUserCreate {
                 Users user = new Users();
                 user.setUsername("admin");
                 user.setPassword(passwordEncoder.encode("admin"));
-                user.setRole("ROLE_ADMIN");
+                user.setRole(Role.ROLE_ADMIN);
                 user.setEnabled(true);
                 user.setAccountNonLocked(true);
                 userRepository.save(user);

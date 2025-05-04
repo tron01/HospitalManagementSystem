@@ -5,6 +5,7 @@ import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
 import com.Abhijith.HospitalManagementSystem.Model.Appointment;
 import com.Abhijith.HospitalManagementSystem.Model.Doctor;
+import com.Abhijith.HospitalManagementSystem.Model.Role;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
@@ -41,8 +42,8 @@ public class DoctorService {
         Users user = new Users();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole("ROLE_DOCTOR"); // Set role for doctor
-        user.setEnabled(false);
+        user.setRole(Role.ROLE_DOCTOR); // Set role for doctor
+        user.setEnabled(true);
         user.setAccountNonLocked(true);
         userRepository.save(user);
 

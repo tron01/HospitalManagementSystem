@@ -68,7 +68,7 @@ public class PatientController {
         return ResponseEntity.ok(new UserTestResponse(
                 currentUser.getId(),
                 currentUser.getUsername(),
-                currentUser.getRole())) ;
+                currentUser.getRole().name())) ;
     }
 
     private static Users getLoggedUserInfo() {

@@ -55,7 +55,7 @@ public class AdminController {
 		return ResponseEntity.ok(new UserTestResponse(
 				currentUser.getId(),
 				currentUser.getUsername(),
-				currentUser.getRole())) ;
+				currentUser.getRole().name())) ;
 	}
 
 	private static Users getLoggedUserInfo() {

@@ -4,10 +4,7 @@ import com.Abhijith.HospitalManagementSystem.DTO.AppointmentCreateRequestByPatie
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.PatientRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.PatientResponse;
-import com.Abhijith.HospitalManagementSystem.Model.Appointment;
-import com.Abhijith.HospitalManagementSystem.Model.Doctor;
-import com.Abhijith.HospitalManagementSystem.Model.Patient;
-import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
@@ -47,7 +44,9 @@ public class PatientService {
         Users user = new Users();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole("ROLE_PATIENT");
+        user.setRole(Role.ROLE_PATIENT);
+        user.setEnabled(true);
+        user.setAccountNonLocked(true);
         userRepository.save(user);
 
         // Create Patient entity

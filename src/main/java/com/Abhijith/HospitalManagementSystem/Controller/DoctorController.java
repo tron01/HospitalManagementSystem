@@ -44,7 +44,7 @@ public class DoctorController {
         return ResponseEntity.ok(new UserTestResponse(
                 currentUser.getId(),
                 currentUser.getUsername(),
-                currentUser.getRole()));
+                currentUser.getRole().name()));
     }
 
     @SecurityRequirement(name = "bearerAuth")

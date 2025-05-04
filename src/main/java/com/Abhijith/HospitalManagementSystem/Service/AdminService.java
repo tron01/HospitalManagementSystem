@@ -2,6 +2,7 @@ package com.Abhijith.HospitalManagementSystem.Service;
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Patient;
+import com.Abhijith.HospitalManagementSystem.Model.Role;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
@@ -61,11 +62,13 @@ private final DoctorRepository doctorRepository;
 	}
 
 	public List<UserResponse> getUsersByRole(String role) {
-		return userRepository.findByRoleIgnoreCase(role).stream()
+		Role roleEnum = Role.valueOf(role.toUpperCase()); // Convert string to Role enum (case insensitive)
+		return userRepository.findByRole(roleEnum).stream()
 				.map(this::toDto)
 				.collect(Collectors.toList());
 	}
-	public List<PatientAdminResponse> getAllPatients() {
+
+public List<PatientAdminResponse> getAllPatients() {
 		return patientRepository.findAll().stream()
 				.map(this::toPatientAdminResponse)
 				.collect(Collectors.toList());
@@ -132,7 +135,7 @@ private final DoctorRepository doctorRepository;
 			return UserResponse.builder()
 					.id(user.getId())
 					.username(user.getUsername())
-					.role(user.getRole())
+					.role(user.getRole().name())
 					.isEnabled(user.isEnabled())
 					.isAccountNonLocked(user.isAccountNonLocked())
 					.build();

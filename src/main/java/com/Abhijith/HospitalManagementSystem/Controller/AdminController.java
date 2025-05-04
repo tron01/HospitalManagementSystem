@@ -1,10 +1,13 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
+import com.Abhijith.HospitalManagementSystem.Model.Receptionist;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Repository.ReceptionistRepository;
 import com.Abhijith.HospitalManagementSystem.Service.AdminService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
+import com.Abhijith.HospitalManagementSystem.Service.ReceptionistService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +26,10 @@ public class AdminController {
 	private final AdminService adminService;
 	private final DoctorService doctorService;
 	private final PatientService patientService;
+	private final ReceptionistService receptionistService;
 
 	@SecurityRequirement(name = "bearerAuth")
-	@PostMapping("/doctors/create-doctor")
+	@PostMapping("/doctors/create-user")
 	public ResponseEntity<DoctorResponse> createDoctor(@RequestBody DoctorRegister request) {
 		// Logic to create doctor
 		DoctorResponse savedDoctor = doctorService.registerDoctor(request);
@@ -33,11 +37,25 @@ public class AdminController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
-	@PostMapping("/patients/create-patient")
+	@PostMapping("/patients/create-user")
 	public ResponseEntity<PatientResponse> createPatient(@RequestBody PatientRegister request) {
 		// Logic to create Patient
 		PatientResponse savedPatient = patientService.registerPatient(request);
 		return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/receptionists/create-user")
+	public ResponseEntity<ReceptionistResponse > createReceptionist(@RequestBody CreateReceptionistRequest request) {
+		// Logic to create Patient
+		ReceptionistResponse receptionist = receptionistService.createReceptionist(request);
+		return ResponseEntity.ok(receptionist);
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/receptionists")
+	public ResponseEntity<List<AppointmentResponse>> getAllReceptionists() {
+		return ResponseEntity.ok(receptionistService.getAllAppointments());
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

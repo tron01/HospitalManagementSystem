@@ -1,16 +1,20 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
+import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.AdminService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -34,6 +38,28 @@ public class AdminController {
 		// Logic to create Patient
 		PatientResponse savedPatient = patientService.registerPatient(request);
 		return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/test")
+	public ResponseEntity<UserTestResponse> test() {
+
+		Users currentUser = getLoggedUserInfo();
+
+		log.info("-----------------------------------");
+		log.warn("Current user: {}", currentUser.getUsername());
+		log.warn("Current user role: {}", currentUser.getRole());
+		log.warn("Current user id: {}", currentUser.getId());
+		log.info("-----------------------------------");
+
+		return ResponseEntity.ok(new UserTestResponse(
+				currentUser.getId(),
+				currentUser.getUsername(),
+				currentUser.getRole())) ;
+	}
+
+	private static Users getLoggedUserInfo() {
+		return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

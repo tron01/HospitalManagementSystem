@@ -10,7 +10,10 @@ import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,14 +50,14 @@ public class AppointmentService {
 		return toAppointmentDto(appointmentRepository.save(appointment));
 	}
 
-	public AppointmentResponse updateAppointmentStatus(AppointmentStatusUpdateRequest request) {
-		Appointment appointment = appointmentRepository.findById(request.getAppointmentId())
-				.orElseThrow(() -> new RuntimeException("Appointment not found"));
+	public AppointmentResponse updateAppointmentStatus(Long id, AppointmentStatusUpdateRequest request) {
+		Appointment appointment = appointmentRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Appointment not found"));
 
-		appointment.setStatus(request.getStatus());
+		appointment.setStatus(request.getStatus().toUpperCase());
 		return toAppointmentDto(appointmentRepository.save(appointment));
 	}
-	// ---------- MAPPERS ----------
+// ---------- MAPPERS ----------
 	private AppointmentResponse toAppointmentDto(Appointment a) {
 		return AppointmentResponse.builder()
 				.id(a.getId())

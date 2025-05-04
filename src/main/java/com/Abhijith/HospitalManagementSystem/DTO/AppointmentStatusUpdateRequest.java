@@ -10,6 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class AppointmentStatusUpdateRequest {
-	private Long appointmentId;
 	private String status;
 }

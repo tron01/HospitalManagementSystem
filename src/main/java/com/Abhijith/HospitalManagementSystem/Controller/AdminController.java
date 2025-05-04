@@ -49,9 +49,21 @@ public class AdminController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/appointments")
+	public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest request) {
+		return ResponseEntity.ok(appointmentService.createAppointment(request));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/appointments")
 	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam String status) {
 		return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/appointments/{id}/status")
+	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id, @RequestBody AppointmentStatusUpdateRequest request) {
+		return ResponseEntity.ok(appointmentService.updateAppointmentStatus(id, request));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

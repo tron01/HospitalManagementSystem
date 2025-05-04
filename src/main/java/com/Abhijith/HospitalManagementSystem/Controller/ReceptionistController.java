@@ -29,9 +29,9 @@ public class ReceptionistController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
-	@PutMapping("/appointments/status")
-	public ResponseEntity<AppointmentResponse> updateStatus(@RequestBody AppointmentStatusUpdateRequest request) {
-		return ResponseEntity.ok(appointmentService.updateAppointmentStatus(request));
+	@PutMapping("/appointments/{id}/status")
+	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id, @RequestBody AppointmentStatusUpdateRequest request) {
+		return ResponseEntity.ok(appointmentService.updateAppointmentStatus(id, request));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

@@ -4,16 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @Builder
-public class AppointmentRequest {
-	private Long patientId;
-	private Long doctorId;
-	private LocalDateTime dateTime;
-	private String reason;
+public class AppointmentStatusUpdateRequest {
+	private Long appointmentId;
+	private String status;
 }
-

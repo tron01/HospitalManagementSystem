@@ -1,15 +1,14 @@
 package com.Abhijith.HospitalManagementSystem.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AppointmentResponse {
 	private Long id;
 	private String patientName;

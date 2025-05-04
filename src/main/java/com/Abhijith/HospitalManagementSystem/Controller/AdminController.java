@@ -1,9 +1,7 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
-import com.Abhijith.HospitalManagementSystem.Model.Receptionist;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
-import com.Abhijith.HospitalManagementSystem.Repository.ReceptionistRepository;
 import com.Abhijith.HospitalManagementSystem.Service.AdminService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
@@ -54,8 +52,8 @@ public class AdminController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/receptionists")
-	public ResponseEntity<List<AppointmentResponse>> getAllReceptionists() {
-		return ResponseEntity.ok(receptionistService.getAllAppointments());
+	public ResponseEntity<List<ReceptionistResponse>> getAllReceptionists() {
+		return ResponseEntity.ok(receptionistService.getAllReceptionists());
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

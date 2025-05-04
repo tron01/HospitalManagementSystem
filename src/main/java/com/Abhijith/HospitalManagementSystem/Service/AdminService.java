@@ -9,11 +9,9 @@ import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ private final DoctorRepository doctorRepository;
 				.collect(Collectors.toList());
 	}
 
-public List<PatientAdminResponse> getAllPatients() {
+	public List<PatientAdminResponse> getAllPatients() {
 		return patientRepository.findAll().stream()
 				.map(this::toPatientAdminResponse)
 				.collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
+import com.Abhijith.HospitalManagementSystem.Model.AppointmentStatus;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -56,7 +57,7 @@ public class AdminController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/appointments")
-	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam String status) {
+	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam AppointmentStatus status) {
 		return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
 	}
 

@@ -83,7 +83,7 @@ public class PatientService {
         appointment.setDoctor(doctor);
         appointment.setAppointmentTime(request.getAppointmentDate());
         appointment.setReason(request.getReason());
-        appointment.setStatus("PENDING");
+        appointment.setStatus(AppointmentStatus.PENDING);
 
         appointmentRepository.save(appointment);
         return toResponse(appointment);

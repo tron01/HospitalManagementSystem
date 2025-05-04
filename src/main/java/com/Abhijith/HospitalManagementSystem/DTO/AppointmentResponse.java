@@ -1,5 +1,6 @@
 package com.Abhijith.HospitalManagementSystem.DTO;
 
+import com.Abhijith.HospitalManagementSystem.Model.AppointmentStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,5 +16,5 @@ public class AppointmentResponse {
 	private String doctorName;
 	private LocalDateTime dateTime;
 	private String reason;
-	private String Status;
+	private AppointmentStatus status;
 }

@@ -4,6 +4,7 @@ import com.Abhijith.HospitalManagementSystem.DTO.AppointmentRequest;
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentStatusUpdateRequest;
 import com.Abhijith.HospitalManagementSystem.Model.Appointment;
+import com.Abhijith.HospitalManagementSystem.Model.AppointmentStatus;
 import com.Abhijith.HospitalManagementSystem.Model.Doctor;
 import com.Abhijith.HospitalManagementSystem.Model.Patient;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
@@ -26,8 +27,8 @@ public class AppointmentService {
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
 
-	public List<AppointmentResponse> getAppointmentsByStatus(String status) {
-		return appointmentRepository.findByStatus(status.toUpperCase()).stream()
+	public List<AppointmentResponse> getAppointmentsByStatus(AppointmentStatus  status) {
+		return appointmentRepository.findByStatus(status).stream()
 				.map(this::toAppointmentDto)
 				.collect(Collectors.toList());
 	}
@@ -44,7 +45,7 @@ public class AppointmentService {
 				.doctor(doctor)
 				.appointmentTime(request.getDateTime())
 				.reason(request.getReason())
-				.status("PENDING")
+				.status(AppointmentStatus.PENDING)
 				.build();
 
 		return toAppointmentDto(appointmentRepository.save(appointment));
@@ -54,7 +55,7 @@ public class AppointmentService {
 		Appointment appointment = appointmentRepository.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Appointment not found"));
 
-		appointment.setStatus(request.getStatus().toUpperCase());
+		appointment.setStatus(request.getStatus());
 		return toAppointmentDto(appointmentRepository.save(appointment));
 	}
 // ---------- MAPPERS ----------
@@ -63,7 +64,7 @@ public class AppointmentService {
 				.id(a.getId())
 				.dateTime(a.getAppointmentTime())
 				.reason(a.getReason())
-				.Status(a.getStatus())
+				.status(a.getStatus())
 				.doctorName(a.getDoctor().getName())
 				.patientName(a.getPatient().getName())
 				.build();

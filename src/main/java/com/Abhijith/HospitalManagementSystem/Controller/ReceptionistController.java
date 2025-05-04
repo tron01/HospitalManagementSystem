@@ -4,6 +4,7 @@ import com.Abhijith.HospitalManagementSystem.DTO.AppointmentRequest;
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentStatusUpdateRequest;
 import com.Abhijith.HospitalManagementSystem.DTO.UserTestResponse;
+import com.Abhijith.HospitalManagementSystem.Model.AppointmentStatus;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.AppointmentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,7 +37,7 @@ public class ReceptionistController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/appointments")
-	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam String status) {
+	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam AppointmentStatus status) {
 		return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
 	}
 

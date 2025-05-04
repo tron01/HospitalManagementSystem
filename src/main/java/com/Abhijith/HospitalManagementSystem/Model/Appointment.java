@@ -18,7 +18,9 @@ public class Appointment {
     private Long id;
 
     private LocalDateTime appointmentTime;
-    private String status; // SCHEDULED, COMPLETED, CANCELLED
+
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

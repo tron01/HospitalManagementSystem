@@ -2,10 +2,7 @@ package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
-import com.Abhijith.HospitalManagementSystem.Service.AdminService;
-import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
-import com.Abhijith.HospitalManagementSystem.Service.PatientService;
-import com.Abhijith.HospitalManagementSystem.Service.ReceptionistService;
+import com.Abhijith.HospitalManagementSystem.Service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +22,7 @@ public class AdminController {
 	private final DoctorService doctorService;
 	private final PatientService patientService;
 	private final ReceptionistService receptionistService;
+	private final AppointmentService appointmentService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/doctors/create-user")
@@ -48,6 +46,12 @@ public class AdminController {
 		// Logic to create Patient
 		ReceptionistResponse receptionist = receptionistService.createReceptionist(request);
 		return ResponseEntity.ok(receptionist);
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/appointments")
+	public ResponseEntity<List<AppointmentResponse>> getAllAppointments() {
+		return ResponseEntity.ok(appointmentService.getAllAppointments());
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

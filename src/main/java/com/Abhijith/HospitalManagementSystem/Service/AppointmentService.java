@@ -23,8 +23,8 @@ public class AppointmentService {
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
 
-	public List<AppointmentResponse> getAllAppointments() {
-		return appointmentRepository.findAll().stream()
+	public List<AppointmentResponse> getAppointmentsByStatus(String status) {
+		return appointmentRepository.findByStatus(status.toUpperCase()).stream()
 				.map(this::toAppointmentDto)
 				.collect(Collectors.toList());
 	}

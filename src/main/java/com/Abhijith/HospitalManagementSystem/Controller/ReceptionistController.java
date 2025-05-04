@@ -36,8 +36,8 @@ public class ReceptionistController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/appointments")
-	public ResponseEntity<List<AppointmentResponse>> getAllAppointments() {
-		return ResponseEntity.ok(appointmentService.getAllAppointments());
+	public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(@RequestParam String status) {
+		return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

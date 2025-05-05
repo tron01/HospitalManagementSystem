@@ -1,11 +1,9 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 import com.Abhijith.HospitalManagementSystem.DTO.*;
-import com.Abhijith.HospitalManagementSystem.Model.Doctor;
-import com.Abhijith.HospitalManagementSystem.Model.Patient;
-import com.Abhijith.HospitalManagementSystem.Model.Role;
-import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.ReceptionistRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,10 +18,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminService {
 
-private final UserRepository userRepository;
-private final PatientRepository patientRepository;
-private final DoctorRepository doctorRepository;
-
+	private final UserRepository userRepository;
+	private final PatientRepository patientRepository;
+	private final DoctorRepository doctorRepository;
+	private final ReceptionistRepository receptionistRepository;
 
 	public UserResponse enableUser(Long userId) {
 		Users user = getUserOrThrow(userId);
@@ -100,6 +98,39 @@ private final DoctorRepository doctorRepository;
 		if (request.getEmail() != null) doctor.setEmail(request.getEmail());
 
 		return toDoctorAdminResponse(doctorRepository.save(doctor));
+	}
+
+	public ReceptionistAdminResponse updateReceptionist(Long id, ReceptionistUpdateRequest request) {
+		Receptionist receptionist = receptionistRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receptionist not found"));
+
+		Users user = receptionist.getUser();
+
+		// Check if the username is already taken by someone else
+		if (request.getUsername() != null) {
+			Optional<Users> existingUser = userRepository.findByUsername(request.getUsername());
+			if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists for another user. Please choose a different username.");
+			}
+			user.setUsername(request.getUsername());
+		}
+
+		// Update receptionist info conditionally
+		if (request.getName() != null) receptionist.setName(request.getName());
+		if (request.getPhone() != null) receptionist.setPhone(request.getPhone());
+		if (request.getEmail() != null) receptionist.setEmail(request.getEmail());
+
+		// Save user update (if username changed)
+		userRepository.save(user);
+		Receptionist updated = receptionistRepository.save(receptionist);
+
+		return new ReceptionistAdminResponse(
+				updated.getId(),
+				updated.getName(),
+				updated.getPhone(),
+				updated.getEmail(),
+				updated.getUser().getUsername()
+		);
 	}
 
 

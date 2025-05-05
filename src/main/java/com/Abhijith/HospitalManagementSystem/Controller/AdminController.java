@@ -104,12 +104,6 @@ public class AdminController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
-	@GetMapping("/receptionists")
-	public ResponseEntity<List<ReceptionistResponse>> getAllReceptionists() {
-		return ResponseEntity.ok(receptionistService.getAllReceptionists());
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/test")
 	public ResponseEntity<UserTestResponse> test() {
 
@@ -157,6 +151,19 @@ public class AdminController {
 	@GetMapping("/doctors")
 	public ResponseEntity<List<DoctorAdminResponse>> getAllDoctors() {
 		return ResponseEntity.ok(adminService.getAllDoctors());
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/receptionists")
+	public ResponseEntity<List<ReceptionistResponse>> getAllReceptionists() {
+		return ResponseEntity.ok(receptionistService.getAllReceptionists());
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/receptionists/{id}")
+	public ResponseEntity<ReceptionistAdminResponse> updateReceptionist(@PathVariable Long id, @RequestBody ReceptionistUpdateRequest request) {
+		ReceptionistAdminResponse updatedReceptionist = adminService.updateReceptionist(id, request);
+		return ResponseEntity.ok(updatedReceptionist);
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

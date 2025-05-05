@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
                 ex.getStatusCode().value(),
-                "",
+                "Error",
                 ex.getReason(),
                 request.getRequestURI());
         return ResponseEntity.status(ex.getStatusCode().value()).body(error);

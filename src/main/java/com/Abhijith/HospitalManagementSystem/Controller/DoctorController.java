@@ -1,10 +1,8 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.UserTestResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Service.DoctorNoteService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
@@ -22,6 +20,7 @@ import java.util.List;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final DoctorNoteService doctorNoteService;
 
     @PostMapping("/register")
     public ResponseEntity<DoctorResponse> registerDoctor(@RequestBody DoctorRegister doctorDTO) {
@@ -61,6 +60,29 @@ public class DoctorController {
 
     private static Users getLoggedUserInfo() {
         return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @PostMapping("/appointments/{appointmentId}/note")
+    public ResponseEntity<DoctorNoteResponse> saveNote(@PathVariable Long appointmentId,@RequestBody DoctorNoteRequest request) {
+
+        Users currentUser = (Users) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        // Set appointmentId from URL
+        request.setAppointmentId(appointmentId);
+        // check if principal.getName() (username) matches doctor of the appointment
+        DoctorNoteResponse response = doctorNoteService.saveDoctorNote(request, currentUser.getUsername());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @GetMapping("/appointments/{appointmentId}/note")
+    public ResponseEntity<DoctorNoteResponse> getDoctorNoteByAppointmentId(
+            @PathVariable Long appointmentId) {
+
+        Users currentUser = (Users) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        DoctorNoteResponse response = doctorNoteService.getDoctorNoteByAppointmentId(appointmentId, currentUser.getUsername());
+
+        return ResponseEntity.ok(response);
     }
 
 

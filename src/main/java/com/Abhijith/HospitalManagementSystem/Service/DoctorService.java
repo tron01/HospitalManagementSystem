@@ -1,12 +1,10 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
 import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.DoctorDashboardResponse;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
 import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
-import com.Abhijith.HospitalManagementSystem.Model.Appointment;
-import com.Abhijith.HospitalManagementSystem.Model.Doctor;
-import com.Abhijith.HospitalManagementSystem.Model.Role;
-import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
@@ -15,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,12 +70,44 @@ public class DoctorService {
 
         Doctor doctor = doctorRepository.findByUserId(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "doctor not found"));
+
         List<Appointment> appointments = appointmentRepository.findByDoctorId(doctor.getId());
 
         return appointments.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+
+    public DoctorDashboardResponse getDashboardData(String currentUser) {
+        // Fetch doctor by user's ID
+        Doctor doctor = doctorRepository.findByUserUsername(currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found"));
+
+        // Get today's date and calculate start and end of the day
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        // Get total appointments
+        long totalAppointments = appointmentRepository.countByDoctor(doctor);
+
+        // Get total appointments by status
+        long pendingAppointments = appointmentRepository.countByDoctorAndStatus(doctor, AppointmentStatus.PENDING);
+        long completedAppointments = appointmentRepository.countByDoctorAndStatus(doctor, AppointmentStatus.COMPLETED);
+        long scheduledAppointments = appointmentRepository.countByDoctorAndStatus(doctor, AppointmentStatus.CONFIRMED);
+
+        // Get today's appointments
+        long totalTodayAppointments = appointmentRepository.countByDoctorAndAppointmentTimeBetween(doctor, startOfDay, endOfDay);
+        long pendingTodayAppointments = appointmentRepository.countByDoctorAndStatusAndAppointmentTimeBetween(doctor, AppointmentStatus.PENDING, startOfDay, endOfDay);
+        long completedTodayAppointments = appointmentRepository.countByDoctorAndStatusAndAppointmentTimeBetween(doctor, AppointmentStatus.COMPLETED, startOfDay, endOfDay);
+        long scheduledTodayAppointments = appointmentRepository.countByDoctorAndStatusAndAppointmentTimeBetween(doctor, AppointmentStatus.CONFIRMED, startOfDay, endOfDay);
+
+        // Return the response object
+        return new DoctorDashboardResponse(totalAppointments, pendingAppointments, completedAppointments, scheduledAppointments,
+                totalTodayAppointments, pendingTodayAppointments, completedTodayAppointments, scheduledTodayAppointments);
+    }
+
+    //----------------------MAPPER-------------------------//
 
     private AppointmentResponse toResponse(Appointment appointment) {
         return new AppointmentResponse(

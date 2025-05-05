@@ -62,6 +62,7 @@ public class DoctorController {
         return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/appointments/{appointmentId}/note")
     public ResponseEntity<DoctorNoteResponse> saveNote(@PathVariable Long appointmentId,@RequestBody DoctorNoteRequest request) {
 
@@ -74,6 +75,8 @@ public class DoctorController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments/{appointmentId}/note")
     public ResponseEntity<DoctorNoteResponse> getDoctorNoteByAppointmentId(
             @PathVariable Long appointmentId) {
@@ -83,6 +86,16 @@ public class DoctorController {
         DoctorNoteResponse response = doctorNoteService.getDoctorNoteByAppointmentId(appointmentId, currentUser.getUsername());
 
         return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/dashboard")
+    public ResponseEntity<DoctorDashboardResponse> getDoctorDashboard() {
+        // Get current logged in user (doctor)
+        Users currentUser = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // Get dashboard data for the doctor
+        DoctorDashboardResponse dashboardResponse = doctorService.getDashboardData(currentUser.getUsername());
+        return ResponseEntity.ok(dashboardResponse);
     }
 
 

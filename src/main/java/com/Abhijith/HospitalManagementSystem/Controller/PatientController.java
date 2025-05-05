@@ -35,6 +35,13 @@ public class PatientController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/update")
+    public ResponseEntity<PatientAdminResponse> updateOwnPatientInfo(@RequestBody PatientUpdateRequest request) {
+        Users currentUser = getLoggedUserInfo(); // Method that fetches the logged-in user
+        return ResponseEntity.ok(patientService.updatePatientByUsername(currentUser.getUsername(), request));
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponse>> getAppointmentsForLoggedInPatient() {
         Users currentUser = getLoggedUserInfo();

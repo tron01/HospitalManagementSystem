@@ -1,9 +1,6 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentCreateRequestByPatient;
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.PatientRegister;
-import com.Abhijith.HospitalManagementSystem.DTO.PatientResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
@@ -72,6 +69,33 @@ public class PatientService {
                 savedPatient.getContact()
         );
     }
+
+    public PatientAdminResponse updatePatientByUsername(String username, PatientUpdateRequest request) {
+        Patient patient = patientRepository.findByUserUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+
+        if (request.getName() != null) patient.setName(request.getName());
+        if (request.getGender() != null) patient.setGender(request.getGender());
+        if (request.getContact() != null) patient.setContact(request.getContact());
+        if (request.getAddress() != null) patient.setAddress(request.getAddress());
+        if (request.getAge() != null) patient.setAge(request.getAge());
+
+        Patient updated = patientRepository.save(patient);
+
+        return PatientAdminResponse.builder()
+                .id(updated.getId())
+                .name(updated.getName())
+                .gender(updated.getGender())
+                .contact(updated.getContact())
+                .address(updated.getAddress())
+                .age(updated.getAge())
+                .username(updated.getUser().getUsername())
+                .isEnabled(updated.getUser().isEnabled())
+                .isAccountNonLocked(updated.getUser().isAccountNonLocked())
+                .build();
+    }
+
+
 
     public AppointmentResponse createAppointmentByPatient(Long patientId, AppointmentCreateRequestByPatient request) {
 

@@ -160,12 +160,6 @@ public class AdminController {
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
-	@PutMapping("/doctors/{doctorId}/update")
-	public ResponseEntity<DoctorResponse> updateDoctorInfoById(@PathVariable Long doctorId,@RequestBody DoctorRequest doctorRequest) {
-		return ResponseEntity.ok(doctorService.updateDoctorInfoByDoctorId(doctorId, doctorRequest));
-	}
-
-	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/doctors/{id}")
 	public ResponseEntity<DoctorAdminResponse> updateDoctor(@PathVariable Long id, @RequestBody DoctorUpdateRequest request) {
 		return ResponseEntity.ok(adminService.updateDoctor(id, request));

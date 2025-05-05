@@ -65,40 +65,21 @@ public class DoctorService {
                 savedDoctor.getContact()
         );
     }
-    public DoctorResponse updateDoctorInfoByDoctorId(Long doctorId, DoctorRequest doctorRequest) {
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found"));
 
-        doctor.setName(doctorRequest.getName());
-        doctor.setSpecialization(doctorRequest.getSpecialization());
-        doctor.setContact(doctorRequest.getContact());
-        doctor.setEmail(doctorRequest.getEmail());
-
-        Doctor updated = doctorRepository.save(doctor);
-
-        return DoctorResponse.builder()
-                .id(updated.getId())
-                .name(updated.getName())
-                .username(updated.getUser().getUsername())
-                .specialization(updated.getSpecialization())
-                .contact(updated.getContact())
-                .email(updated.getEmail())
-                .build();
-    }
     public DoctorResponse updateDoctorInfo(String currentUser, DoctorRequest doctorRequest) {
 
         Doctor doctor = doctorRepository.findByUserUsername(currentUser)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
 
-        // Update doctor details
-        doctor.setName(doctorRequest.getName());
-        doctor.setSpecialization(doctorRequest.getSpecialization());
-        doctor.setContact(doctorRequest.getContact());
-        doctor.setEmail(doctorRequest.getEmail());
+        // Update fields only if provided (not null)
+        if (doctorRequest.getName() != null) doctor.setName(doctorRequest.getName());
+        if (doctorRequest.getSpecialization() != null) doctor.setSpecialization(doctorRequest.getSpecialization());
+        if (doctorRequest.getContact() != null) doctor.setContact(doctorRequest.getContact());
+        if (doctorRequest.getEmail() != null) doctor.setEmail(doctorRequest.getEmail());
 
         Doctor updatedDoctor = doctorRepository.save(doctor);
 
-        return   new DoctorResponse(
+        return new DoctorResponse(
                 updatedDoctor.getId(),
                 updatedDoctor.getUser().getUsername(),
                 updatedDoctor.getName(),
@@ -107,6 +88,7 @@ public class DoctorService {
                 updatedDoctor.getContact()
         );
     }
+
     public List<AppointmentResponse> getAppointmentsListByDoctorId(Long userId) {
 
         Doctor doctor = doctorRepository.findByUserId(userId).orElseThrow(

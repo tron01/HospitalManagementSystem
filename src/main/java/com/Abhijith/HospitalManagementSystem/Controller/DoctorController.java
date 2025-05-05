@@ -58,6 +58,13 @@ public class DoctorController {
         return ResponseEntity.ok(appointments);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/update")
+    public ResponseEntity<DoctorResponse> updateDoctorInfo(@RequestBody DoctorRequest doctorRequest) {
+        Users currentUser = getLoggedUserInfo();
+        return ResponseEntity.ok(doctorService.updateDoctorInfo(currentUser.getUsername(), doctorRequest));
+    }
+
     private static Users getLoggedUserInfo() {
         return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }

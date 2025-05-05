@@ -1,9 +1,6 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorDashboardResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorRegister;
-import com.Abhijith.HospitalManagementSystem.DTO.DoctorResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
@@ -64,6 +61,28 @@ public class DoctorService {
                 savedDoctor.getSpecialization(),
                 savedDoctor.getEmail(),
                 savedDoctor.getContact()
+        );
+    }
+    public DoctorResponse updateDoctorInfo(String currentUser, DoctorRequest doctorRequest) {
+
+        Doctor doctor = doctorRepository.findByUserUsername(currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found"));
+
+        // Update doctor details
+        doctor.setName(doctorRequest.getName());
+        doctor.setSpecialization(doctorRequest.getSpecialization());
+        doctor.setContact(doctorRequest.getContact());
+        doctor.setEmail(doctorRequest.getEmail());
+
+        Doctor updatedDoctor = doctorRepository.save(doctor);
+
+        return   new DoctorResponse(
+                updatedDoctor.getId(),
+                updatedDoctor.getUser().getUsername(),
+                updatedDoctor.getName(),
+                updatedDoctor.getSpecialization(),
+                updatedDoctor.getEmail(),
+                updatedDoctor.getContact()
         );
     }
     public List<AppointmentResponse> getAppointmentsListByDoctorId(Long userId) {

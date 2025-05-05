@@ -8,6 +8,7 @@ import com.Abhijith.HospitalManagementSystem.Model.DoctorNote;
 import com.Abhijith.HospitalManagementSystem.Model.Medication;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorNoteRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DoctorNoteService {
 
 	private final DoctorNoteRepository doctorNoteRepository;

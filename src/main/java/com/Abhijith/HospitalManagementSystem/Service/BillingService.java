@@ -7,6 +7,7 @@ import com.Abhijith.HospitalManagementSystem.Model.Billing;
 import com.Abhijith.HospitalManagementSystem.Model.PaymentStatus;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.BillingRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BillingService {
 	private final BillingRepository billingRepository;
 	private final AppointmentRepository appointmentRepository;

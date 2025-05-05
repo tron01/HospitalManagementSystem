@@ -3,6 +3,7 @@ package com.Abhijith.HospitalManagementSystem.Service;
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReceptionistService {
 
 	private final PasswordEncoder passwordEncoder;

@@ -33,6 +33,13 @@ public class AppointmentService {
 				.collect(Collectors.toList());
 	}
 
+	public List<AppointmentResponse> getAllAppointments() {
+		List<Appointment> appointments = appointmentRepository.findAll();
+		return appointments.stream()
+				.map(this::toAppointmentDto)
+				.collect(Collectors.toList());
+	}
+
 	public AppointmentResponse createAppointment(AppointmentRequest request) {
 
 		Patient patient = patientRepository.findById(request.getPatientId())

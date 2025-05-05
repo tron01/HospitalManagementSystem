@@ -41,6 +41,13 @@ public class BillingService {
 				.map(this::toDto)
 				.collect(Collectors.toList());
 	}
+	// Get All Billings By Status
+	public List<BillingResponse> getBillingsByStatus(PaymentStatus status) {
+		List<Billing> billings = billingRepository.findByPaymentStatus(status);
+		return billings.stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
+	}
 
 	// Get Billing by ID
 	public BillingResponse getBillingById(Long id) {
@@ -49,16 +56,15 @@ public class BillingService {
 		return toDto(billing);
 	}
 
-	// Update Payment Status
-	public BillingResponse updatePaymentStatus(Long id, PaymentStatus status) {
-		Billing billing = billingRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Billing not found"));
+	public BillingResponse updatePaymentStatusByAppointmentId(Long appointmentId, PaymentStatus status) {
+		Billing billing = billingRepository.findByAppointmentId(appointmentId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Billing not found for this appointment"));
 
 		billing.setPaymentStatus(status);
 		return toDto(billingRepository.save(billing));
 	}
 
-	// ---------- MAPPER ----------
+// ---------- MAPPER ----------
 	private BillingResponse toDto(Billing b) {
 		return BillingResponse.builder()
 				.id(b.getId())

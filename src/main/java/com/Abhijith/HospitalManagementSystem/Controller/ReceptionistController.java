@@ -1,12 +1,11 @@
 package com.Abhijith.HospitalManagementSystem.Controller;
 
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentRequest;
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentResponse;
-import com.Abhijith.HospitalManagementSystem.DTO.AppointmentStatusUpdateRequest;
-import com.Abhijith.HospitalManagementSystem.DTO.UserTestResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.AppointmentStatus;
+import com.Abhijith.HospitalManagementSystem.Model.PaymentStatus;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.AppointmentService;
+import com.Abhijith.HospitalManagementSystem.Service.BillingService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,37 @@ import java.util.List;
 public class ReceptionistController {
 
 	private final AppointmentService appointmentService;
+	private final BillingService billingService;
 
+	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/billings")
+	public ResponseEntity<BillingResponse> createBilling(@RequestBody BillingRequest request) {
+		return ResponseEntity.ok(billingService.createBilling(request));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/billings")
+	public ResponseEntity<List<BillingResponse>> getBillingsByStatus(@RequestParam(required = false) PaymentStatus status) {
+		if (status != null) {
+			return ResponseEntity.ok(billingService.getBillingsByStatus(status));
+		} else {
+			return ResponseEntity.ok(billingService.getAllBillings());
+		}
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/billings/{id}")
+	public ResponseEntity<BillingResponse> getBillingById(@PathVariable Long id) {
+		return ResponseEntity.ok(billingService.getBillingById(id));
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/appointment/{appointmentId}/payment")
+	public ResponseEntity<BillingResponse> updatePaymentStatus(
+			@PathVariable Long appointmentId,
+			@RequestParam PaymentStatus status) {
+		return ResponseEntity.ok(billingService.updatePaymentStatusByAppointmentId(appointmentId, status));
+	}
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/appointments")
 	public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest request) {

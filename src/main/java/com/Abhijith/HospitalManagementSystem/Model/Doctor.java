@@ -20,7 +20,7 @@ public class Doctor {
     private String contact;
     private String email;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 }

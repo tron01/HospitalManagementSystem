@@ -36,29 +36,28 @@ public class PatientService {
         // Check if username already exists
         Optional<Users> existingUser = userRepository.findByUsername(dto.getUsername());
         if (existingUser.isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
-        // Create User entity
-        Users user = new Users();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(Role.ROLE_PATIENT);
-        user.setEnabled(true);
-        user.setAccountNonLocked(true);
-        userRepository.save(user);
+        Users user = Users.builder()
+                .username(dto.getUsername())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(Role.ROLE_PATIENT)
+                .isEnabled(true)
+                .isAccountNonLocked(true)
+                .build();
 
-        // Create Patient entity
-        Patient patient = new Patient();
-        patient.setName(dto.getName());
-        patient.setUser(user);
-        patient.setAddress(dto.getAddress());
-        patient.setAge(dto.getAge());
-        patient.setGender(dto.getGender());
-        patient.setContact(dto.getContact());
+        Patient patient = Patient.builder()
+                .name(dto.getName())
+                .gender(dto.getGender())
+                .contact(dto.getContact())
+                .address(dto.getAddress())
+                .age(dto.getAge())
+                .user(user)
+                .build();
+
         Patient savedPatient = patientRepo.save(patient);
 
-        // Save patient and return response DTO
         return new PatientResponse(
                 savedPatient.getId(),
                 savedPatient.getUser().getUsername(),

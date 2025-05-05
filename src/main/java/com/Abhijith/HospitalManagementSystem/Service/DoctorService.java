@@ -31,31 +31,30 @@ public class DoctorService {
 
     // Register Doctor
     public DoctorResponse registerDoctor(DoctorRegister dto) {
-        // Check if username already exists
+
         Optional<Users> existingUser = userRepository.findByUsername(dto.getUsername());
         if (existingUser.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Username already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
-        // Create User entity
-        Users user = new Users();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(Role.ROLE_DOCTOR); // Set role for doctor
-        user.setEnabled(true);
-        user.setAccountNonLocked(true);
-        userRepository.save(user);
+        Users user = Users.builder()
+                .username(dto.getUsername())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(Role.ROLE_DOCTOR)
+                .isEnabled(true)
+                .isAccountNonLocked(true)
+                .build();
 
-        // Create Doctor entity
-        Doctor doctor = new Doctor();
-        doctor.setName(dto.getName());
-        doctor.setSpecialization(dto.getSpecialization());
-        doctor.setContact(dto.getContact());
-        doctor.setEmail(dto.getEmail());
-        doctor.setUser(user); // Link doctor with user
+        Doctor doctor = Doctor.builder()
+                .name(dto.getName())
+                .specialization(dto.getSpecialization())
+                .contact(dto.getContact())
+                .email(dto.getEmail())
+                .user(user)
+                .build();
 
-        // Save doctor and return response DTO
         Doctor savedDoctor = doctorRepository.save(doctor);
+
         return new DoctorResponse(
                 savedDoctor.getId(),
                 savedDoctor.getUser().getUsername(),

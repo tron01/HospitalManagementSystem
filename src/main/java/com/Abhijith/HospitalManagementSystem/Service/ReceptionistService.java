@@ -5,10 +5,12 @@ import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -22,6 +24,12 @@ public class ReceptionistService {
 	private final ReceptionistRepository receptionistRepository;
 
 	public ReceptionistResponse createReceptionist(CreateReceptionistRequest request) {
+
+		Optional<Users> existingUser = userRepository.findByUsername(request.getUsername());
+		if (existingUser.isPresent()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+		}
+
 		Users user = Users.builder()
 				.username(request.getUsername())
 				.password(passwordEncoder.encode(request.getPassword()))
@@ -37,7 +45,16 @@ public class ReceptionistService {
 				.phone(request.getPhone())
 				.user(user)
 				.build();
-		return toReceptionistDto(receptionistRepository.save(receptionist));
+
+		Receptionist saved = receptionistRepository.save(receptionist);
+
+		return new ReceptionistResponse(
+				saved.getId(),
+				saved.getUser().getUsername(),
+				saved.getName(),
+				saved.getEmail(),
+				saved.getPhone()
+		);
 	}
 
 	public List<ReceptionistResponse> getAllReceptionists() {

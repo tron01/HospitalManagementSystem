@@ -63,6 +63,26 @@ public class DoctorService {
                 savedDoctor.getContact()
         );
     }
+    public DoctorResponse updateDoctorInfoByDoctorId(Long doctorId, DoctorRequest doctorRequest) {
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found"));
+
+        doctor.setName(doctorRequest.getName());
+        doctor.setSpecialization(doctorRequest.getSpecialization());
+        doctor.setContact(doctorRequest.getContact());
+        doctor.setEmail(doctorRequest.getEmail());
+
+        Doctor updated = doctorRepository.save(doctor);
+
+        return DoctorResponse.builder()
+                .id(updated.getId())
+                .name(updated.getName())
+                .username(updated.getUser().getUsername())
+                .specialization(updated.getSpecialization())
+                .contact(updated.getContact())
+                .email(updated.getEmail())
+                .build();
+    }
     public DoctorResponse updateDoctorInfo(String currentUser, DoctorRequest doctorRequest) {
 
         Doctor doctor = doctorRepository.findByUserUsername(currentUser)

@@ -90,7 +90,7 @@ public class DoctorController {
 
         Users currentUser = (Users) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
-        DoctorNoteResponse response = doctorNoteService.getDoctorNoteByAppointmentId(appointmentId, currentUser.getUsername());
+        DoctorNoteResponse response = doctorNoteService.getDoctorNoteByAppointmentIdForDoctor(appointmentId, currentUser.getUsername());
 
         return ResponseEntity.ok(response);
     }

@@ -55,7 +55,7 @@ public class DoctorNoteService {
 		return mapToResponse(savedNote);
 	}
 
-	public DoctorNoteResponse getDoctorNoteByAppointmentId(Long appointmentId, String doctorUsername) {
+	public DoctorNoteResponse getDoctorNoteByAppointmentIdForDoctor(Long appointmentId, String doctorUsername) {
 		// Fetch the DoctorNote
 		DoctorNote note = doctorNoteRepository.findByAppointmentId(appointmentId)
 				.orElseThrow(() -> new RuntimeException("Doctor note not found"));
@@ -66,6 +66,29 @@ public class DoctorNoteService {
 		}
 		return mapToResponse(note);
 	}
+
+	public DoctorNoteResponse getDoctorNoteByAppointmentId(Long appointmentId) {
+		DoctorNote note = doctorNoteRepository.findByAppointmentId(appointmentId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "AppointmentId  not found"));
+
+		List<MedicationDTO> meds = note.getMedications().stream()
+				.map(med -> MedicationDTO.builder()
+						.name(med.getName())
+						.dosage(med.getDosage())
+						.frequency(med.getFrequency())
+						.timing(med.getTiming())
+						.build())
+				.collect(Collectors.toList());
+
+		return DoctorNoteResponse.builder()
+				.id(note.getId())
+				.diagnosis(note.getDiagnosis())
+				.instructions(note.getInstructions())
+				.appointmentId(note.getAppointment().getId())
+				.medications(meds)
+				.build();
+	}
+
 
 	private DoctorNoteResponse mapToResponse(DoctorNote note) {
 		List<MedicationDTO> meds = note.getMedications().stream()

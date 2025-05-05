@@ -26,8 +26,9 @@ public class AdminController {
 	private final ReceptionistService receptionistService;
 	private final AppointmentService appointmentService;
 	private final BillingService billingService;
+private final DoctorNoteService doctorNoteService;
 
-	@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/billings")
 	public ResponseEntity<BillingResponse> createBilling(@RequestBody BillingRequest request) {
 		return ResponseEntity.ok(billingService.createBilling(request));
@@ -201,4 +202,11 @@ public class AdminController {
 	public ResponseEntity<UserResponse> unlockUser(@PathVariable Long id) {
 		return ResponseEntity.ok(adminService.unlockUser(id));
 	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/appointment{appointmentId}/doctor-notes")
+	public ResponseEntity<DoctorNoteResponse> getDoctorNoteByAppointmentId(@PathVariable Long appointmentId) {
+		return ResponseEntity.ok(doctorNoteService.getDoctorNoteByAppointmentId(appointmentId));
+	}
+
 }

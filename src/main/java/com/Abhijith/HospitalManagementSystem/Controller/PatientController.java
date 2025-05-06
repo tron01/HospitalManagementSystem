@@ -2,6 +2,8 @@ package com.Abhijith.HospitalManagementSystem.Controller;
 
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
+import com.Abhijith.HospitalManagementSystem.Service.BillingService;
+import com.Abhijith.HospitalManagementSystem.Service.DoctorNoteService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,8 @@ import java.util.List;
 public class PatientController {
 
     private final PatientService patientService;
+    private final DoctorNoteService doctorNoteService;
+    private final BillingService billingService;
 
     @PostMapping("/register")
     public ResponseEntity<PatientResponse> registerDoctor(@RequestBody PatientRegister doctorDTO) {
@@ -26,13 +30,13 @@ public class PatientController {
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/appointments")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
-        Users currentUser = getLoggedUserInfo();
-        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
+//    @SecurityRequirement(name = "bearerAuth")
+//    @PostMapping("/appointments")
+//    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
+//        Users currentUser = getLoggedUserInfo();
+//        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+//    }
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
@@ -50,14 +54,6 @@ public class PatientController {
         System.out.println(patientId);
         List<AppointmentResponse> appointments = patientService.getAppointmentsListByPatientId(patientId);
         return ResponseEntity.ok(appointments);
-    }
-
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/{appointmentId}")
-    public ResponseEntity<AppointmentResponse> getAppointmentDetails(@PathVariable Long appointmentId) {
-        Users currentUser = getLoggedUserInfo();
-        AppointmentResponse dto = patientService.getAppointmentByPatient(currentUser.getId(), appointmentId);
-        return ResponseEntity.ok(dto);
     }
 
     @SecurityRequirement(name = "bearerAuth")
@@ -81,5 +77,24 @@ public class PatientController {
     private static Users getLoggedUserInfo() {
 		return (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/appointment/{appointmentId}/billinfo")
+    public ResponseEntity<BillingResponse> getBillingByAppointmentId(@PathVariable Long appointmentId) {
+
+        Users currentUser = getLoggedUserInfo();// From JWT/session
+        BillingResponse billingDTO = billingService.getBillingByAppointmentId(appointmentId, currentUser.getUsername());
+        return ResponseEntity.ok(billingDTO);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/appointment/{appointmentId}/doc_note")
+    public ResponseEntity<DoctorNoteResponse> getDoctorNote(@PathVariable Long appointmentId) {
+
+        Users currentUser = getLoggedUserInfo();// From JWT/session
+        DoctorNoteResponse note = doctorNoteService.getDoctorNoteByAppointmentIdForPatient(appointmentId, currentUser.getUsername());
+        return ResponseEntity.ok(note);
+    }
+
 
 }

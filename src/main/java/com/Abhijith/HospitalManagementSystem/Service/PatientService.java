@@ -94,39 +94,23 @@ public class PatientService {
                 .build();
     }
 
-
-
-    public AppointmentResponse createAppointmentByPatient(Long patientId, AppointmentCreateRequestByPatient request) {
-
-        Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
-        Patient patient = patientRepository.findByUserId(patientId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
-
-        Appointment appointment = new Appointment();
-        appointment.setPatient(patient);
-        appointment.setDoctor(doctor);
-        appointment.setAppointmentTime(request.getAppointmentDate());
-        appointment.setReason(request.getReason());
-        appointment.setStatus(AppointmentStatus.PENDING);
-
-        appointmentRepository.save(appointment);
-        return toResponse(appointment);
-    }
-
-    public AppointmentResponse getAppointmentByPatient(Long id, Long patientId) {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
-
-        Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
-
-        if (!appointment.getPatient().getId().equals(patient.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to this appointment");
-        }
-
-        return toResponse(appointment);
-    }
+//    public AppointmentResponse createAppointmentByPatient(Long user_id, AppointmentCreateRequestByPatient request) {
+//
+//        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
+//        Patient patient = patientRepository.findByUserId(user_id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+//
+//        Appointment appointment = new Appointment();
+//        appointment.setPatient(patient);
+//        appointment.setDoctor(doctor);
+//        appointment.setAppointmentTime(request.getAppointmentDate());
+//        appointment.setReason(request.getReason());
+//        appointment.setStatus(AppointmentStatus.PENDING);
+//
+//        appointmentRepository.save(appointment);
+//        return toResponse(appointment);
+//    }
 
     public List<AppointmentResponse> getAppointmentsListByPatientId(Long userId) {
         Patient patient = patientRepository.findByUserId(userId).orElseThrow(()->new

@@ -2,11 +2,13 @@ package com.Abhijith.HospitalManagementSystem.Service;
 
 import com.Abhijith.HospitalManagementSystem.DTO.BillingRequest;
 import com.Abhijith.HospitalManagementSystem.DTO.BillingResponse;
-import com.Abhijith.HospitalManagementSystem.Model.Appointment;
-import com.Abhijith.HospitalManagementSystem.Model.Billing;
-import com.Abhijith.HospitalManagementSystem.Model.PaymentStatus;
+import com.Abhijith.HospitalManagementSystem.DTO.DoctorNoteResponse;
+import com.Abhijith.HospitalManagementSystem.DTO.MedicationDTO;
+import com.Abhijith.HospitalManagementSystem.Model.*;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.BillingRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.DoctorNoteRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class BillingService {
 	private final BillingRepository billingRepository;
 	private final AppointmentRepository appointmentRepository;
+	private final UserRepository userRepository;
 
 	// Create Billing
 	public BillingResponse createBilling(BillingRequest request) {
@@ -66,6 +69,33 @@ public class BillingService {
 		return toDto(billingRepository.save(billing));
 	}
 
+	public BillingResponse getBillingByAppointmentId(Long appointmentId, String username) {
+
+		Appointment appointment = appointmentRepository.findById(appointmentId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Appointment not found"));
+
+		// Fetch logged-in user (assumes username is email or unique identifier)
+		Users user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"username not found"));
+
+		// Ensure the logged-in user is the owner of the appointment
+		if (!appointment.getPatient().getUser().getId().equals(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not allowed to access this billing info.");
+		}
+
+		Billing billing = billingRepository.findByAppointmentId(appointmentId).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Billing not found for this appointment"));
+
+		return new BillingResponse(
+				billing.getId(),
+				billing.getAmount(),
+				billing.getBillingDate(),
+				billing.getAppointment().getId(),
+				billing.getAppointment().getPatient().getName(),
+				billing.getAppointment().getDoctor().getName(),
+				billing.getPaymentStatus()
+		);
+	}
 // ---------- MAPPER ----------
 	private BillingResponse toDto(Billing b) {
 		return BillingResponse.builder()

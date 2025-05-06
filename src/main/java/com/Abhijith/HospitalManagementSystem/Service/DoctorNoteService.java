@@ -6,8 +6,10 @@ import com.Abhijith.HospitalManagementSystem.DTO.MedicationDTO;
 import com.Abhijith.HospitalManagementSystem.Model.Appointment;
 import com.Abhijith.HospitalManagementSystem.Model.DoctorNote;
 import com.Abhijith.HospitalManagementSystem.Model.Medication;
+import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.Abhijith.HospitalManagementSystem.Repository.DoctorNoteRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ public class DoctorNoteService {
 
 	private final DoctorNoteRepository doctorNoteRepository;
 	private final AppointmentRepository appointmentRepository;
+	private final UserRepository userRepository;
+
 
 	public DoctorNoteResponse saveDoctorNote(DoctorNoteRequest request,String doctorUsername) {
 		Appointment appointment = appointmentRepository.findById(request.getAppointmentId())
@@ -89,6 +93,33 @@ public class DoctorNoteService {
 				.build();
 	}
 
+	public DoctorNoteResponse getDoctorNoteByAppointmentIdForPatient(Long appointmentId, String username) {
+		Appointment appointment = appointmentRepository.findById(appointmentId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Appointment not found"));
+
+		// Check if appointment belongs to logged-in user
+		Users user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+
+		if (!appointment.getPatient().getUser().getId().equals(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access denied to this appointment’s doctor note.");
+		}
+
+		DoctorNote note = doctorNoteRepository.findByAppointmentId(appointmentId)
+				.orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor note not found for this appointment."));
+
+		List<MedicationDTO> meds = note.getMedications().stream()
+				.map(m -> new MedicationDTO(m.getName(), m.getDosage(), m.getFrequency(), m.getTiming()))
+				.collect(Collectors.toList());
+
+		return DoctorNoteResponse.builder()
+				.id(note.getId())
+				.diagnosis(note.getDiagnosis())
+				.instructions(note.getInstructions())
+				.appointmentId(appointmentId)
+				.medications(meds)
+				.build();
+	}
 
 	private DoctorNoteResponse mapToResponse(DoctorNote note) {
 		List<MedicationDTO> meds = note.getMedications().stream()

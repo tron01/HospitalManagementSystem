@@ -5,6 +5,7 @@ import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorNoteService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class DoctorController {
     private final DoctorNoteService doctorNoteService;
 
     @PostMapping("/register")
-    public ResponseEntity<DoctorResponse> registerDoctor(@RequestBody DoctorRegister doctorDTO) {
+    public ResponseEntity<DoctorResponse> registerDoctor(@Valid @RequestBody DoctorRegister doctorDTO) {
         DoctorResponse savedDoctor = doctorService.registerDoctor(doctorDTO);
         return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
     }
@@ -60,7 +61,7 @@ public class DoctorController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
-    public ResponseEntity<DoctorResponse> updateDoctorInfo(@RequestBody DoctorRequest doctorRequest) {
+    public ResponseEntity<DoctorResponse> updateDoctorInfo(@Valid @RequestBody DoctorRequest doctorRequest) {
         Users currentUser = getLoggedUserInfo();
         return ResponseEntity.ok(doctorService.updateDoctorInfo(currentUser.getUsername(), doctorRequest));
     }
@@ -71,7 +72,7 @@ public class DoctorController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/appointments/{appointmentId}/note")
-    public ResponseEntity<DoctorNoteResponse> saveNote(@PathVariable Long appointmentId,@RequestBody DoctorNoteRequest request) {
+    public ResponseEntity<DoctorNoteResponse> saveNote(@PathVariable Long appointmentId,@Valid @RequestBody DoctorNoteRequest request) {
 
         Users currentUser = (Users) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
@@ -85,8 +86,7 @@ public class DoctorController {
 
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/appointments/{appointmentId}/note")
-    public ResponseEntity<DoctorNoteResponse> getDoctorNoteByAppointmentId(
-            @PathVariable Long appointmentId) {
+    public ResponseEntity<DoctorNoteResponse> getDoctorNoteByAppointmentId(@PathVariable Long appointmentId) {
 
         Users currentUser = (Users) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();

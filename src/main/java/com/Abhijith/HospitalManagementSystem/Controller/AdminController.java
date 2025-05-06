@@ -6,6 +6,7 @@ import com.Abhijith.HospitalManagementSystem.Model.PaymentStatus;
 import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,11 @@ public class AdminController {
 	private final ReceptionistService receptionistService;
 	private final AppointmentService appointmentService;
 	private final BillingService billingService;
-private final DoctorNoteService doctorNoteService;
+	private final DoctorNoteService doctorNoteService;
 
-@SecurityRequirement(name = "bearerAuth")
+	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/billings")
-	public ResponseEntity<BillingResponse> createBilling(@RequestBody BillingRequest request) {
+	public ResponseEntity<BillingResponse> createBilling(@Valid @RequestBody BillingRequest request) {
 		return ResponseEntity.ok(billingService.createBilling(request));
 	}
 
@@ -52,15 +53,13 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/appointment/{appointmentId}/payment")
-	public ResponseEntity<BillingResponse> updatePaymentStatus(
-			@PathVariable Long appointmentId,
-			@RequestParam PaymentStatus status) {
+	public ResponseEntity<BillingResponse> updatePaymentStatus(@PathVariable Long appointmentId,@RequestParam PaymentStatus status) {
 		return ResponseEntity.ok(billingService.updatePaymentStatusByAppointmentId(appointmentId, status));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/doctors/create-user")
-	public ResponseEntity<DoctorResponse> createDoctor(@RequestBody DoctorRegister request) {
+	public ResponseEntity<DoctorResponse> createDoctor(@Valid @RequestBody DoctorRegister request) {
 		// Logic to create doctor
 		DoctorResponse savedDoctor = doctorService.registerDoctor(request);
 		return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
@@ -68,7 +67,7 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/patients/create-user")
-	public ResponseEntity<PatientResponse> createPatient(@RequestBody PatientRegister request) {
+	public ResponseEntity<PatientResponse> createPatient(@Valid @RequestBody PatientRegister request) {
 		// Logic to create Patient
 		PatientResponse savedPatient = patientService.registerPatient(request);
 		return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
@@ -76,7 +75,7 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/receptionists/create-user")
-	public ResponseEntity<ReceptionistResponse > createReceptionist(@RequestBody CreateReceptionistRequest request) {
+	public ResponseEntity<ReceptionistResponse > createReceptionist(@Valid @RequestBody CreateReceptionistRequest request) {
 		// Logic to create Patient
 		ReceptionistResponse receptionist = receptionistService.createReceptionist(request);
 		return ResponseEntity.ok(receptionist);
@@ -84,7 +83,7 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/appointments")
-	public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest request) {
+	public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
 		return ResponseEntity.ok(appointmentService.createAppointment(request));
 	}
 
@@ -100,7 +99,7 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/appointments/{id}/status")
-	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id, @RequestBody AppointmentStatusUpdateRequest request) {
+	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id,@Valid  @RequestBody AppointmentStatusUpdateRequest request) {
 		return ResponseEntity.ok(appointmentService.updateAppointmentStatus(id, request));
 	}
 
@@ -163,20 +162,20 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/receptionists/{id}")
-	public ResponseEntity<ReceptionistAdminResponse> updateReceptionist(@PathVariable Long id, @RequestBody ReceptionistUpdateRequest request) {
+	public ResponseEntity<ReceptionistAdminResponse> updateReceptionist(@PathVariable Long id,@Valid @RequestBody ReceptionistUpdateRequest request) {
 		ReceptionistAdminResponse updatedReceptionist = adminService.updateReceptionist(id, request);
 		return ResponseEntity.ok(updatedReceptionist);
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/doctors/{id}")
-	public ResponseEntity<DoctorAdminResponse> updateDoctor(@PathVariable Long id, @RequestBody DoctorUpdateRequest request) {
+	public ResponseEntity<DoctorAdminResponse> updateDoctor(@PathVariable Long id,@Valid @RequestBody DoctorUpdateRequest request) {
 		return ResponseEntity.ok(adminService.updateDoctor(id, request));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/patients/{id}")
-	public ResponseEntity<PatientAdminResponse> updatePatient(@PathVariable Long id, @RequestBody PatientUpdateRequest request) {
+	public ResponseEntity<PatientAdminResponse> updatePatient(@PathVariable Long id,@Valid @RequestBody PatientUpdateRequest request) {
 		return ResponseEntity.ok(adminService.updatePatient(id, request));
 	}
 

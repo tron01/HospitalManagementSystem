@@ -3,6 +3,7 @@ package com.Abhijith.HospitalManagementSystem.Controller;
 import com.Abhijith.HospitalManagementSystem.DTO.AuthRequest;
 import com.Abhijith.HospitalManagementSystem.DTO.JwtResponse;
 import com.Abhijith.HospitalManagementSystem.Util.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<JwtResponse> generateToken(@RequestBody AuthRequest authRequest) {
+    private ResponseEntity<JwtResponse> generateToken(@Valid @RequestBody AuthRequest authRequest) {
         manager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         String token= jwtUtil.generateJwtToken(authRequest.getUsername());

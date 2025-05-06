@@ -6,6 +6,7 @@ import com.Abhijith.HospitalManagementSystem.Service.BillingService;
 import com.Abhijith.HospitalManagementSystem.Service.DoctorNoteService;
 import com.Abhijith.HospitalManagementSystem.Service.PatientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,14 +26,14 @@ public class PatientController {
     private final BillingService billingService;
 
     @PostMapping("/register")
-    public ResponseEntity<PatientResponse> registerDoctor(@RequestBody PatientRegister doctorDTO) {
+    public ResponseEntity<PatientResponse> registerDoctor(@Valid @RequestBody PatientRegister doctorDTO) {
         PatientResponse savedPatient = patientService.registerPatient(doctorDTO);
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
 //    @SecurityRequirement(name = "bearerAuth")
 //    @PostMapping("/appointments")
-//    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequestByPatient request) {
+//    public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentCreateRequestByPatient request) {
 //        Users currentUser = getLoggedUserInfo();
 //        AppointmentResponse created = patientService.createAppointmentByPatient(currentUser.getId(),request);
 //        return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -40,7 +41,7 @@ public class PatientController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
-    public ResponseEntity<PatientAdminResponse> updateOwnPatientInfo(@RequestBody PatientUpdateRequest request) {
+    public ResponseEntity<PatientAdminResponse> updateOwnPatientInfo(@Valid @RequestBody PatientUpdateRequest request) {
         Users currentUser = getLoggedUserInfo(); // Method that fetches the logged-in user
         return ResponseEntity.ok(patientService.updatePatientByUsername(currentUser.getUsername(), request));
     }

@@ -7,6 +7,7 @@ import com.Abhijith.HospitalManagementSystem.Model.Users;
 import com.Abhijith.HospitalManagementSystem.Service.AppointmentService;
 import com.Abhijith.HospitalManagementSystem.Service.BillingService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ReceptionistController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/billings")
-	public ResponseEntity<BillingResponse> createBilling(@RequestBody BillingRequest request) {
+	public ResponseEntity<BillingResponse> createBilling(@Valid @RequestBody BillingRequest request) {
 		return ResponseEntity.ok(billingService.createBilling(request));
 	}
 
@@ -47,20 +48,18 @@ public class ReceptionistController {
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/appointment/{appointmentId}/payment")
-	public ResponseEntity<BillingResponse> updatePaymentStatus(
-			@PathVariable Long appointmentId,
-			@RequestParam PaymentStatus status) {
+	public ResponseEntity<BillingResponse> updatePaymentStatus(@PathVariable Long appointmentId, @RequestParam PaymentStatus status) {
 		return ResponseEntity.ok(billingService.updatePaymentStatusByAppointmentId(appointmentId, status));
 	}
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/appointments")
-	public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest request) {
+	public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
 		return ResponseEntity.ok(appointmentService.createAppointment(request));
 	}
 
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/appointments/{id}/status")
-	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id, @RequestBody AppointmentStatusUpdateRequest request) {
+	public ResponseEntity<AppointmentResponse> updateStatus(@PathVariable Long id,@Valid  @RequestBody AppointmentStatusUpdateRequest request) {
 		return ResponseEntity.ok(appointmentService.updateAppointmentStatus(id, request));
 	}
 

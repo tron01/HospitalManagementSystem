@@ -138,8 +138,9 @@ private final DoctorNoteService doctorNoteService;
 
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/dashboard")
-	public String adminDashboard() {
-		return "Welcome to the admin dashboard!";
+	public ResponseEntity<AdminDashboardDTO> getDashboardData() {
+		AdminDashboardDTO dashboard = adminService.getDashboardData();
+		return ResponseEntity.ok(dashboard);
 	}
 
 	@SecurityRequirement(name = "bearerAuth")

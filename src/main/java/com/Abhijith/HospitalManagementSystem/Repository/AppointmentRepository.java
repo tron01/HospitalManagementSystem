@@ -29,4 +29,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 	// Count today's appointments by status for a doctor
 	long countByDoctorAndStatusAndAppointmentTimeBetween(Doctor doctor, AppointmentStatus status, LocalDateTime start, LocalDateTime end);
 
+	long countByStatus(AppointmentStatus status);
 }

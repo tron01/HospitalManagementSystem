@@ -1,10 +1,7 @@
 package com.Abhijith.HospitalManagementSystem.Service;
 import com.Abhijith.HospitalManagementSystem.DTO.*;
 import com.Abhijith.HospitalManagementSystem.Model.*;
-import com.Abhijith.HospitalManagementSystem.Repository.DoctorRepository;
-import com.Abhijith.HospitalManagementSystem.Repository.PatientRepository;
-import com.Abhijith.HospitalManagementSystem.Repository.ReceptionistRepository;
-import com.Abhijith.HospitalManagementSystem.Repository.UserRepository;
+import com.Abhijith.HospitalManagementSystem.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +19,8 @@ public class AdminService {
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
 	private final ReceptionistRepository receptionistRepository;
+	private final AppointmentRepository appointmentRepository;
+	private final UserRepository usersRepository;
 
 	public UserResponse enableUser(Long userId) {
 		Users user = getUserOrThrow(userId);
@@ -157,6 +156,24 @@ public class AdminService {
 		if (request.getAddress() != null) patient.setAddress(request.getAddress());
 
 		return toPatientAdminResponse(patientRepository.save(patient));
+	}
+
+	public AdminDashboardDTO getDashboardData() {
+		long patients = patientRepository.count();
+		long doctors = doctorRepository.count();
+		long appointments = appointmentRepository.count();
+		long receptionists = receptionistRepository.count();
+		long users = usersRepository.count();
+
+		long scheduled = appointmentRepository.countByStatus(AppointmentStatus.CONFIRMED);
+		long completed = appointmentRepository.countByStatus(AppointmentStatus.COMPLETED);
+		long cancelled = appointmentRepository.countByStatus(AppointmentStatus.CANCELLED);
+		long pending = appointmentRepository.countByStatus(AppointmentStatus.PENDING);
+
+		return new AdminDashboardDTO(
+				patients, doctors, appointments, receptionists, users,
+				scheduled, completed, cancelled, pending
+		);
 	}
 
 

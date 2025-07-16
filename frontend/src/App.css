@@ -1,0 +1,72 @@
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Remove default Bootstrap container padding for better space utilization */
+.container-fluid {
+  max-width: none !important;
+}
+
+/* Optimize spacing for better layout */
+.navbar {
+  margin-bottom: 0 !important;
+}
+
+/* Ensure cards and components use space efficiently */
+.card {
+  margin-bottom: 1rem;
+}
+
+/* Responsive table improvements */
+.table-responsive {
+  border: none;
+  margin-bottom: 0;
+}
+
+/* Reduce excessive padding in forms */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Logo and animation styles (from original Vite template) */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.read-the-docs {
+  color: #888;
+}
